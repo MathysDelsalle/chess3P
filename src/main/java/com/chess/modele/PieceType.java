@@ -1,0 +1,2 @@
+package modele;
+public enum PieceType {King, Queen, Rook, Bishop, Knight, Pawn}
