@@ -14,7 +14,7 @@ public class Main {
 
         consoleView.diplayCreationReussie();
 
-        Position p = board.findPosition(board.getPositions(),1, 4, 4);
+        Position p = board.findPosition(board.getPositions(),1, 1, 2);
 
         consoleView.displayPossibleMoves(p, board);
     }

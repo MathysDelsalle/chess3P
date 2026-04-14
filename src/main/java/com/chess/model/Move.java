@@ -54,8 +54,6 @@ public class Move {
     @Override
     public String toString() {
         return "Mouvement de " + from +
-                "\n vers " + to +
-                "\n dans le sens : " + direction +
-                " sur " + distance + " cases\n";
+                "\n vers " + to + "\n";
     }
 }

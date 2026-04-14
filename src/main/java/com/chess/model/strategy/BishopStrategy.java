@@ -99,7 +99,7 @@ public class BishopStrategy implements MovementStrategy {
 
         // Cas centre :
         // si current est un centre ET que next est aussi un centre,
-        // alors on est dans un vrai embranchement
+        // on est dans un embranchement
         if (isCenter(current) && next != null && isCenter(next)) {
             List<NextStep> centerSteps = getCenterSteps(previous, current, direction, board);
             if (!centerSteps.isEmpty()) {
