@@ -1,15 +1,21 @@
-import game.BoardFactory;
-import modele.*;
+import factories.BoardFactory;
+import model.Board;
+import model.Position;
+import view.*;
+//import model.*;
 
 public class Main {
     public static void main(String[] args) {
 
         Board board = BoardFactory.createInitialBoard();
+  
 
-        System.out.println("Plateau créé sans soucis :)) .");
+        ConsoleView consoleView = new ConsoleView();
 
-        Position p = board.getPosition(64);
+        consoleView.diplayCreationReussie();
 
-        System.out.println(board.getPiece(p).getMovementStrategy().getPossibleMoves(p, board,board.getPiece(p)));
+        Position p = board.findPosition(board.getPositions(),1, 4, 4);
+
+        consoleView.displayPossibleMoves(p, board);
     }
 }

@@ -1,4 +1,4 @@
-package modele;
+package model;
 public class Bot implements People {
     
     private int botId;

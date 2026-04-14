@@ -1,8 +1,8 @@
-package modele;
+package model;
 
 import java.util.Map;
 
-import strategy.MovementStrategy;
+import model.strategy.MovementStrategy;
 
 public class Piece {
 
@@ -10,6 +10,7 @@ public class Piece {
     private People owner;
     private Color color;
     private MovementStrategy movementStrategy;
+    private boolean hasMoved=false;
 
     public Piece(PieceType type, People owner, Color color) {
         this.type = type;
@@ -42,5 +43,14 @@ public class Piece {
 
     public void setMovementStrategy(PieceType P,Map<PieceType, MovementStrategy> strategies){
         this.movementStrategy = strategies.get(P);
+    }
+
+
+    public boolean isHasMoved() {
+        return hasMoved;
+    }
+
+    public void setHasMoved(boolean b){
+        this.hasMoved=b;
     }
 }

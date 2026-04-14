@@ -1,4 +1,4 @@
-package modele;
+package model;
 
 //enumération des direction et méthode d'inversion
 public enum Direction {

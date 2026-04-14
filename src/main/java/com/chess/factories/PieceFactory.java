@@ -1,12 +1,12 @@
-package game;
+package factories;
 
 import java.util.Map;
 
-import modele.Color;
-import modele.People;
-import modele.Piece;
-import modele.PieceType;
-import strategy.*;
+import model.Color;
+import model.People;
+import model.Piece;
+import model.PieceType;
+import model.strategy.*;
 
 //factory de pieces
 

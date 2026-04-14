@@ -1,14 +1,16 @@
-package strategy;
+package model.strategy;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import modele.*;
-public class BishopStrategy implements MovementStrategy{
+import model.*;
+
+public class PawnStrategy implements MovementStrategy{
 
     @Override
     public List<Position> getPossibleMoves(Position from, Board board, Piece piece){
 
         return new ArrayList<>();
     }
+    
 }

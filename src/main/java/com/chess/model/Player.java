@@ -1,4 +1,4 @@
-package modele;
+package model;
 public class Player implements People{
 
     private String name;

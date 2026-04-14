@@ -1,12 +1,12 @@
-package strategy;
+package model.strategy;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import modele.*;
+import model.*;
 
-public class KnightStrategy implements MovementStrategy{
-
+public class QueenStrategy implements MovementStrategy{
+    
     @Override
     public List<Position> getPossibleMoves(Position from, Board board, Piece piece){
 
