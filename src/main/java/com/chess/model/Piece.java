@@ -46,7 +46,7 @@ public class Piece {
     }
 
 
-    public boolean isHasMoved() {
+    public boolean getHasMoved() {
         return hasMoved;
     }
 
