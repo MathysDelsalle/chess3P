@@ -40,15 +40,13 @@ public class Move {
         if (this == o) return true;
         if (!(o instanceof Move)) return false;
         Move move = (Move) o;
-        return distance == move.distance
-                && Objects.equals(from, move.from)
-                && Objects.equals(to, move.to)
-                && direction == move.direction;
+        return Objects.equals(from, move.from)
+                && Objects.equals(to, move.to);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(from, to, direction, distance);
+        return Objects.hash(from, to);
     }
 
     @Override

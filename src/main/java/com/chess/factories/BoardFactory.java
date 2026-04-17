@@ -245,9 +245,9 @@ public class BoardFactory {
         board.setPiece(board.findPosition(positions, 3, 1, i+7), PieceFactory.createPiece(PieceType.Rook, b2, Color.red,PieceFactory.getStrategies(),3));
 
         //white player ( player )
-        board.setPiece(board.findPosition(positions, 1, 3, i), PieceFactory.createPiece(PieceType.Rook, p, Color.white,PieceFactory.getStrategies(),1));
+        board.setPiece(board.findPosition(positions, 1, 1, i), PieceFactory.createPiece(PieceType.Rook, p, Color.white,PieceFactory.getStrategies(),1));
         board.setPiece(board.findPosition(positions, 1, 1, i+1), PieceFactory.createPiece(PieceType.Knight, p, Color.white,PieceFactory.getStrategies(),1));
-        board.setPiece(board.findPosition(positions, 1, 1, i+2), PieceFactory.createPiece(PieceType.Bishop, p, Color.white,PieceFactory.getStrategies(),1));
+        board.setPiece(board.findPosition(positions, 1, 3, 4), PieceFactory.createPiece(PieceType.Bishop, p, Color.white,PieceFactory.getStrategies(),1));
         board.setPiece(board.findPosition(positions, 1, 1, i+3), PieceFactory.createPiece(PieceType.Queen, p, Color.white,PieceFactory.getStrategies(),1));
         board.setPiece(board.findPosition(positions, 1, 1, i+4), PieceFactory.createPiece(PieceType.King, p, Color.white,PieceFactory.getStrategies(),1));
         board.setPiece(board.findPosition(positions, 1, 1, i+5), PieceFactory.createPiece(PieceType.Bishop, p, Color.white,PieceFactory.getStrategies(),1));

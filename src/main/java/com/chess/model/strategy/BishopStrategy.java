@@ -64,28 +64,24 @@ public class BishopStrategy implements MovementStrategy {
         }
     }
 
-    public List<NextStep> getNextSteps(Position previous, Position current, Direction direction, Board board) 
-    {
+   public List<NextStep> getNextSteps(Position previous, Position current, Direction direction, Board board) {
         List<NextStep> nextSteps = new ArrayList<>();
 
-        Position next = board.getNeighborsDirection(current, direction);
-
-        // Cas centre :
-        // si current est un centre ET que next est aussi un centre,
-        // on est dans un embranchement
-        if (isCenter(current) && next != null && isCenter(next)) {
+        // Cas centre : si on est sur une case centre,
+        // on teste d'abord les embranchements spéciaux
+        if (isCenter(current)) {
             List<NextStep> centerSteps = getCenterSteps(previous, current, direction, board);
             if (!centerSteps.isEmpty()) {
                 return centerSteps;
             }
         }
 
-        // Cas normal / jointure simple / centre simple
+        // Cas normal
+        Position next = board.getNeighborsDirection(current, direction);
+
         if (next != null) {
             Direction nextDirection = direction;
 
-            // Si on traverse deux jonctions à la suite,
-            // on inverse la direction pour l'étape suivante
             if (current.getIsJunction() && next.getIsJunction()) {
                 nextDirection = direction.switchDir();
             }
@@ -119,10 +115,10 @@ public class BishopStrategy implements MovementStrategy {
                 Position next2 = board.findPosition(board.getPositions(), 3, 4, 4);
 
                 if (next1 != null) {
-                    nextSteps.add(new NextStep(next1, Direction.DIAG_CENTRE_LEFT));
+                    nextSteps.add(new NextStep(next1, Direction.DIAG_DOWN_LEFT));
                 }
                 if (next2 != null) {
-                    nextSteps.add(new NextStep(next2, Direction.DIAG_CENTRE_RIGHT));
+                    nextSteps.add(new NextStep(next2, Direction.DIAG_DOWN_LEFT));
                 }
 
                 return nextSteps;
@@ -139,10 +135,10 @@ public class BishopStrategy implements MovementStrategy {
                 Position next2 = board.findPosition(board.getPositions(), 3, 4, 4);
 
                 if (next1 != null) {
-                    nextSteps.add(new NextStep(next1, Direction.DIAG_CENTRE_RIGHT));
+                    nextSteps.add(new NextStep(next1, Direction.DIAG_DOWN_LEFT));
                 }
                 if (next2 != null) {
-                    nextSteps.add(new NextStep(next2, Direction.DIAG_CENTRE_LEFT));
+                    nextSteps.add(new NextStep(next2, Direction.DIAG_DOWN_LEFT));
                 }
 
                 return nextSteps;
@@ -159,10 +155,10 @@ public class BishopStrategy implements MovementStrategy {
                 Position next2 = board.findPosition(board.getPositions(), 2, 4, 4);
 
                 if (next1 != null) {
-                    nextSteps.add(new NextStep(next1, Direction.DIAG_CENTRE_LEFT));
+                    nextSteps.add(new NextStep(next1, Direction.DIAG_DOWN_LEFT));
                 }
                 if (next2 != null) {
-                    nextSteps.add(new NextStep(next2, Direction.DIAG_CENTRE_RIGHT));
+                    nextSteps.add(new NextStep(next2, Direction.DIAG_DOWN_LEFT));
                 }
 
                 return nextSteps;
@@ -180,10 +176,10 @@ public class BishopStrategy implements MovementStrategy {
                 Position next2 = board.findPosition(board.getPositions(), 3, 4, 5);
 
                 if (next1 != null) {
-                    nextSteps.add(new NextStep(next1, Direction.DIAG_CENTRE_LEFT));
+                    nextSteps.add(new NextStep(next1, Direction.DIAG_DOWN_RIGHT));
                 }
                 if (next2 != null) {
-                    nextSteps.add(new NextStep(next2, Direction.DIAG_CENTRE_RIGHT));
+                    nextSteps.add(new NextStep(next2, Direction.DIAG_DOWN_RIGHT));
                 }
 
                 return nextSteps;
@@ -200,10 +196,10 @@ public class BishopStrategy implements MovementStrategy {
                 Position next2 = board.findPosition(board.getPositions(), 3, 4, 5);
 
                 if (next1 != null) {
-                    nextSteps.add(new NextStep(next1, Direction.DIAG_CENTRE_RIGHT));
+                    nextSteps.add(new NextStep(next1, Direction.DIAG_DOWN_RIGHT));
                 }
                 if (next2 != null) {
-                    nextSteps.add(new NextStep(next2, Direction.DIAG_CENTRE_LEFT));
+                    nextSteps.add(new NextStep(next2, Direction.DIAG_DOWN_RIGHT));
                 }
 
                 return nextSteps;
@@ -220,10 +216,10 @@ public class BishopStrategy implements MovementStrategy {
                 Position next2 = board.findPosition(board.getPositions(), 2, 4, 5);
 
                 if (next1 != null) {
-                    nextSteps.add(new NextStep(next1, Direction.DIAG_CENTRE_LEFT));
+                    nextSteps.add(new NextStep(next1, Direction.DIAG_DOWN_RIGHT));
                 }
                 if (next2 != null) {
-                    nextSteps.add(new NextStep(next2, Direction.DIAG_CENTRE_RIGHT));
+                    nextSteps.add(new NextStep(next2, Direction.DIAG_DOWN_RIGHT));
                 }
 
                 return nextSteps;

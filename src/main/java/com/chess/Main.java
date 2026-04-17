@@ -15,7 +15,7 @@ public class Main {
 
         consoleView.diplayCreationReussie();
 
-        Position p = board.findPosition(board.getPositions(),1, 3, 1);
+        Position p = board.findPosition(board.getPositions(),1, 3, 4);
         //System.out.println(board.getPiece(p));
 
 
