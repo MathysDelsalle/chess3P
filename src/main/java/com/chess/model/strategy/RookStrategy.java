@@ -21,30 +21,40 @@ public List<Move> getPossibleMoves(Position from, Board board, Piece piece) {
         Direction.RIGHT
     };
 
+//chercher comment aller de 2/4/8 vers 2/4/7
+    Position suite = from;
     for (Direction direction : ROOK_DIRECTIONS) {
-        Position current = board.getNeighborsDirection(from, direction);
+        Position to = board.getNeighborsDirection(suite,direction);
         Set<Position> visited = new HashSet<>();
 
-        while (current != null && !visited.contains(current)) {
-            Piece target = board.getPiece(current);
-            visited.add(current);
+        while (to != null && !visited.contains(to)) {
+            Piece target = board.getPiece(to);
+            visited.add(to);
 
             if (target == null) {
-                moves.add(new Move(from, current, direction));
+                moves.add(new Move(suite, to, direction));
             } else {
                 if (!target.getOwner().equals(piece.getOwner())) {
-                    moves.add(new Move(from, current, direction));
+                    moves.add(new Move(suite, to, direction));
                 }
                 break;
             }
-            if(current.getIsJunction()){
-                current = board.getNeighborsDirection(current, direction.switchDir());
+            Position previous = board.getNeighborsDirection(suite, direction);
+            if(piece.getStartTier()==suite.getTiers()){
+                previous = board.getNeighborsDirection(suite, direction.switchDir());
+            }
+
+            if(suite.getIsJunction() && previous!=null && previous.getIsJunction()){
+                suite=to;
+                to = board.getNeighborsDirection(to, direction.switchDir());
             }
             else{
-                current = board.getNeighborsDirection(current, direction);
+                suite=to;
+                to = board.getNeighborsDirection(to, direction);
             }
             
         }
+        suite=from;
     }
 
     return moves;

@@ -11,8 +11,9 @@ public class Piece {
     private Color color;
     private MovementStrategy movementStrategy;
     private boolean hasMoved=false;
+    private int StartTier;
 
-    public Piece(PieceType type, People owner, Color color) {
+    public Piece(PieceType type, People owner, Color color, int tier) {
         this.type = type;
         this.owner = owner;
         this.color = color;
@@ -52,5 +53,9 @@ public class Piece {
 
     public void setHasMoved(boolean b){
         this.hasMoved=b;
+    }
+
+    public int getStartTier() {
+        return StartTier;
     }
 }

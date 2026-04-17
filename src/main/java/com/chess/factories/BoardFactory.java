@@ -74,7 +74,7 @@ public class BoardFactory {
     public static void connectCenterCases(Board board,Map<Integer, Position> positions, Position p) {
         
         //a demander au prof pour les ifs dans des ifs
-        if(p.getColonne()==4){
+        if(p.getLigne()==4 && p.getColonne()==4){
             addNeighborIfExists(board, p, Direction.RIGHT, board.findPosition(positions, p.getTiers(), p.getLigne(), p.getColonne() + 1));
             if(p.getTiers()==1){
                 addJunction(board, p, Direction.UP, board.findPosition(positions, p.getTiers()+1, p.getLigne(), p.getColonne() + 1));
@@ -151,26 +151,68 @@ public class BoardFactory {
 
     if(tiers==1){
         if(colonne<=3){
-            addJunction(board, p, Direction.UP, board.findPosition(positions, tiers+1, ligne, colonne));
+            addJunction(board, p, Direction.UP, board.findPosition(positions, tiers+1, ligne, 9-colonne));
+            if(colonne==1){
+                addJunction(board, p, Direction.DIAG_UP_RIGHT,board.findPosition(positions, tiers+1, ligne, 8-colonne));
+            }
+            else{
+                addJunction(board, p, Direction.DIAG_UP_LEFT,board.findPosition(positions, tiers+1, ligne, 10-colonne));
+                addJunction(board, p, Direction.DIAG_UP_RIGHT,board.findPosition(positions, tiers+1, ligne, 8-colonne));
+            }
         }
         else if(colonne>5 && colonne<= 8){
-            addJunction(board, p, Direction.UP, board.findPosition(positions, tiers+2, ligne, colonne));
+            addJunction(board, p, Direction.UP, board.findPosition(positions, tiers+2, ligne, 9-colonne));
+            if(colonne==8){
+                addJunction(board, p, Direction.DIAG_UP_LEFT,board.findPosition(positions, tiers+2, ligne, 10-colonne));
+            }
+            else{
+                addJunction(board, p, Direction.DIAG_UP_LEFT,board.findPosition(positions, tiers+2, ligne, 10-colonne));
+                addJunction(board, p, Direction.DIAG_UP_RIGHT,board.findPosition(positions, tiers+2, ligne, 8-colonne));
+            }
         }
        
     }else if(tiers==2){
         if(colonne<=3){
-            addJunction(board, p, Direction.UP, board.findPosition(positions, tiers+1, ligne, colonne));
+            addJunction(board, p, Direction.UP, board.findPosition(positions, tiers+1, ligne, 9-colonne));
+            if(colonne==1){
+                addJunction(board, p, Direction.DIAG_UP_RIGHT,board.findPosition(positions, tiers+1, ligne, 8-colonne));
+            }
+            else{
+                addJunction(board, p, Direction.DIAG_UP_LEFT,board.findPosition(positions, tiers+1, ligne, 10-colonne));
+                addJunction(board, p, Direction.DIAG_UP_RIGHT,board.findPosition(positions, tiers+1, ligne, 8-colonne));
+            }
         }
         else if(colonne>5 && colonne<= 8){
-            addJunction(board, p, Direction.UP, board.findPosition(positions, tiers-1, ligne, colonne));
+            addJunction(board, p, Direction.UP, board.findPosition(positions, tiers-1, ligne, 9-colonne));
+            if(colonne==8){
+                addJunction(board, p, Direction.DIAG_UP_LEFT,board.findPosition(positions, tiers-1, ligne, 10-colonne));
+            }
+            else{
+                addJunction(board, p, Direction.DIAG_UP_LEFT,board.findPosition(positions, tiers-1, ligne, 10-colonne));
+                addJunction(board, p, Direction.DIAG_UP_RIGHT,board.findPosition(positions, tiers-1, ligne, 8-colonne));
+            }
         }
        
     }else{
         if(colonne<=3){
-            addJunction(board, p, Direction.UP, board.findPosition(positions, tiers-2, ligne, colonne));
+            addJunction(board, p, Direction.UP, board.findPosition(positions, tiers-2, ligne, 9-colonne));
+            if(colonne==1){
+                addJunction(board, p, Direction.DIAG_UP_RIGHT,board.findPosition(positions, tiers-2, ligne, 8-colonne));
+            }
+            else{
+                addJunction(board, p, Direction.DIAG_UP_LEFT,board.findPosition(positions, tiers-2, ligne, 10-colonne));
+                addJunction(board, p, Direction.DIAG_UP_RIGHT,board.findPosition(positions, tiers-2, ligne, 8-colonne));
+            }
         }
         else if(colonne>5 && colonne<= 8){
-            addJunction(board, p, Direction.UP, board.findPosition(positions, tiers-1, ligne, colonne));
+            addJunction(board, p, Direction.UP, board.findPosition(positions, tiers-1, ligne, 9-colonne));
+            if(colonne==8){
+                addJunction(board, p, Direction.DIAG_UP_LEFT,board.findPosition(positions, tiers-1, ligne, 10-colonne));
+            }
+            else{
+                addJunction(board, p, Direction.DIAG_UP_LEFT,board.findPosition(positions, tiers-1, ligne, 10-colonne));
+                addJunction(board, p, Direction.DIAG_UP_RIGHT,board.findPosition(positions, tiers-1, ligne, 8-colonne));
+            }
         }
        
     }
@@ -183,40 +225,40 @@ public class BoardFactory {
     public static void placeInitialPieces(Board board, Map<Integer, Position> positions, Player p, Bot b1, Bot b2){
         int i=1;
         //blue player ( bot1 )
-        board.setPiece(board.findPosition(positions, 2, 1, i), PieceFactory.createPiece(PieceType.Rook, b1, Color.blue,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 2, 1, i+1), PieceFactory.createPiece(PieceType.Knight, b1, Color.blue,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 2, 1, i+2), PieceFactory.createPiece(PieceType.Bishop, b1, Color.blue,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 2, 1, i+3), PieceFactory.createPiece(PieceType.Queen, b1, Color.blue,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 2, 1, i+4), PieceFactory.createPiece(PieceType.King, b1, Color.blue,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 2, 1, i+5), PieceFactory.createPiece(PieceType.Bishop, b1, Color.blue,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 2, 1, i+6), PieceFactory.createPiece(PieceType.Knight, b1, Color.blue,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 2, 1, i+7), PieceFactory.createPiece(PieceType.Rook, b1, Color.blue,PieceFactory.getStrategies()));
+        board.setPiece(board.findPosition(positions, 2, 1, i), PieceFactory.createPiece(PieceType.Rook, b1, Color.blue,PieceFactory.getStrategies(),2));
+        board.setPiece(board.findPosition(positions, 2, 1, i+1), PieceFactory.createPiece(PieceType.Knight, b1, Color.blue,PieceFactory.getStrategies(),2));
+        board.setPiece(board.findPosition(positions, 2, 1, i+2), PieceFactory.createPiece(PieceType.Bishop, b1, Color.blue,PieceFactory.getStrategies(),2));
+        board.setPiece(board.findPosition(positions, 2, 1, i+3), PieceFactory.createPiece(PieceType.Queen, b1, Color.blue,PieceFactory.getStrategies(),2));
+        board.setPiece(board.findPosition(positions, 2, 1, i+4), PieceFactory.createPiece(PieceType.King, b1, Color.blue,PieceFactory.getStrategies(),2));
+        board.setPiece(board.findPosition(positions, 2, 1, i+5), PieceFactory.createPiece(PieceType.Bishop, b1, Color.blue,PieceFactory.getStrategies(),2));
+        board.setPiece(board.findPosition(positions, 2, 1, i+6), PieceFactory.createPiece(PieceType.Knight, b1, Color.blue,PieceFactory.getStrategies(),2));
+        board.setPiece(board.findPosition(positions, 2, 1, i+7), PieceFactory.createPiece(PieceType.Rook, b1, Color.blue,PieceFactory.getStrategies(),2));
 
         //red player ( bot2 )
-        board.setPiece(board.findPosition(positions, 3, 1, i), PieceFactory.createPiece(PieceType.Rook, b2, Color.red,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 3, 1, i+1), PieceFactory.createPiece(PieceType.Knight, b2, Color.red,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 3, 1, i+2), PieceFactory.createPiece(PieceType.Bishop, b2, Color.red,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 3, 1, i+3), PieceFactory.createPiece(PieceType.Queen, b2, Color.red,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 3, 1, i+4), PieceFactory.createPiece(PieceType.King, b2, Color.red,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 3, 1, i+5), PieceFactory.createPiece(PieceType.Bishop, b2, Color.red,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 3, 1, i+6), PieceFactory.createPiece(PieceType.Knight, b2, Color.red,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 3, 1, i+7), PieceFactory.createPiece(PieceType.Rook, b2, Color.red,PieceFactory.getStrategies()));
+        board.setPiece(board.findPosition(positions, 3, 1, i), PieceFactory.createPiece(PieceType.Rook, b2, Color.red,PieceFactory.getStrategies(),3));
+        board.setPiece(board.findPosition(positions, 3, 1, i+1), PieceFactory.createPiece(PieceType.Knight, b2, Color.red,PieceFactory.getStrategies(),3));
+        board.setPiece(board.findPosition(positions, 3, 1, i+2), PieceFactory.createPiece(PieceType.Bishop, b2, Color.red,PieceFactory.getStrategies(),3));
+        board.setPiece(board.findPosition(positions, 3, 1, i+3), PieceFactory.createPiece(PieceType.Queen, b2, Color.red,PieceFactory.getStrategies(),3));
+        board.setPiece(board.findPosition(positions, 3, 1, i+4), PieceFactory.createPiece(PieceType.King, b2, Color.red,PieceFactory.getStrategies(),3));
+        board.setPiece(board.findPosition(positions, 3, 1, i+5), PieceFactory.createPiece(PieceType.Bishop, b2, Color.red,PieceFactory.getStrategies(),3));
+        board.setPiece(board.findPosition(positions, 3, 1, i+6), PieceFactory.createPiece(PieceType.Knight, b2, Color.red,PieceFactory.getStrategies(),3));
+        board.setPiece(board.findPosition(positions, 3, 1, i+7), PieceFactory.createPiece(PieceType.Rook, b2, Color.red,PieceFactory.getStrategies(),3));
 
         //white player ( player )
-        board.setPiece(board.findPosition(positions, 1, 1, i), PieceFactory.createPiece(PieceType.Rook, p, Color.white,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 1, 1, i+1), PieceFactory.createPiece(PieceType.Knight, p, Color.white,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 1, 1, i+2), PieceFactory.createPiece(PieceType.Bishop, p, Color.white,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 1, 1, i+3), PieceFactory.createPiece(PieceType.Queen, p, Color.white,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 1, 1, i+4), PieceFactory.createPiece(PieceType.King, p, Color.white,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 1, 1, i+5), PieceFactory.createPiece(PieceType.Bishop, p, Color.white,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 1, 1, i+6), PieceFactory.createPiece(PieceType.Knight, p, Color.white,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 1, 1, i+7), PieceFactory.createPiece(PieceType.Rook, p, Color.white,PieceFactory.getStrategies()));
+        board.setPiece(board.findPosition(positions, 1, 3, i), PieceFactory.createPiece(PieceType.Rook, p, Color.white,PieceFactory.getStrategies(),1));
+        board.setPiece(board.findPosition(positions, 1, 1, i+1), PieceFactory.createPiece(PieceType.Knight, p, Color.white,PieceFactory.getStrategies(),1));
+        board.setPiece(board.findPosition(positions, 1, 1, i+2), PieceFactory.createPiece(PieceType.Bishop, p, Color.white,PieceFactory.getStrategies(),1));
+        board.setPiece(board.findPosition(positions, 1, 1, i+3), PieceFactory.createPiece(PieceType.Queen, p, Color.white,PieceFactory.getStrategies(),1));
+        board.setPiece(board.findPosition(positions, 1, 1, i+4), PieceFactory.createPiece(PieceType.King, p, Color.white,PieceFactory.getStrategies(),1));
+        board.setPiece(board.findPosition(positions, 1, 1, i+5), PieceFactory.createPiece(PieceType.Bishop, p, Color.white,PieceFactory.getStrategies(),1));
+        board.setPiece(board.findPosition(positions, 1, 1, i+6), PieceFactory.createPiece(PieceType.Knight, p, Color.white,PieceFactory.getStrategies(),1));
+        board.setPiece(board.findPosition(positions, 1, 1, i+7), PieceFactory.createPiece(PieceType.Rook, p, Color.white,PieceFactory.getStrategies(),1));
         
         //pawns
         for(i=1;i<9;i++){
-        board.setPiece(board.findPosition(positions, 3, 2, i), PieceFactory.createPiece(PieceType.Pawn, b2, Color.red,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 2, 2, i), PieceFactory.createPiece(PieceType.Pawn, b1, Color.blue,PieceFactory.getStrategies()));
-        board.setPiece(board.findPosition(positions, 1, 2, i), PieceFactory.createPiece(PieceType.Pawn, p, Color.white,PieceFactory.getStrategies()));
+        board.setPiece(board.findPosition(positions, 3, 2, i), PieceFactory.createPiece(PieceType.Pawn, b2, Color.red,PieceFactory.getStrategies(),3));
+        board.setPiece(board.findPosition(positions, 2, 2, i), PieceFactory.createPiece(PieceType.Pawn, b1, Color.blue,PieceFactory.getStrategies(),2));
+        board.setPiece(board.findPosition(positions, 1, 2, i), PieceFactory.createPiece(PieceType.Pawn, p, Color.white,PieceFactory.getStrategies(),1));
         }
 
         /*DEBUG

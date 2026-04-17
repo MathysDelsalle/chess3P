@@ -22,8 +22,8 @@ public class PieceFactory {
     );
 
 
-    public static Piece createPiece(PieceType type, People owner, Color color,Map<PieceType, MovementStrategy> strategies) {
-        Piece P = new Piece(type, owner,color);
+    public static Piece createPiece(PieceType type, People owner, Color color,Map<PieceType, MovementStrategy> strategies,int tier) {
+        Piece P = new Piece(type, owner,color,tier);
         P.setMovementStrategy(type, strategies);
         return P;
     }

@@ -31,30 +31,15 @@ public class BishopStrategy implements MovementStrategy {
             Position first = board.getNeighborsDirection(from, startDirection);
 
             if (first != null) {
-                exploreDirection(
-                    from,
-                    from,
-                    first,
-                    startDirection,
-                    board,
-                    piece,
-                    moves,
-                    new HashSet<>()
-                );
+                exploreDirection(from,from,first,startDirection,board,piece,moves,new HashSet<>());
             }
         }
 
         return new ArrayList<>(moves);
     }
 
-    private void exploreDirection(Position from,
-                                  Position previous,
-                                  Position current,
-                                  Direction currentDirection,
-                                  Board board,
-                                  Piece piece,
-                                  Set<Move> moves,
-                                  Set<Position> visited) {
+    public void exploreDirection(Position from, Position previous, Position current, Direction currentDirection, Board board, Piece piece, Set<Move> moves, Set<Position> visited) 
+    {
 
         if (current == null || visited.contains(current)) {
             return;
@@ -75,24 +60,12 @@ public class BishopStrategy implements MovementStrategy {
 
         List<NextStep> nextSteps = getNextSteps(previous, current, currentDirection, board);
 
-        for (NextStep step : nextSteps) {
-            exploreDirection(
-                from,
-                current,
-                step.getPosition(),
-                step.getDirection(),
-                board,
-                piece,
-                moves,
-                new HashSet<>(visited)
-            );
+        for (NextStep step : nextSteps) {exploreDirection(from, current, step.getPosition(), step.getDirection(), board, piece, moves, new HashSet<>(visited));
         }
     }
 
-    private List<NextStep> getNextSteps(Position previous,
-                                        Position current,
-                                        Direction direction,
-                                        Board board) {
+    public List<NextStep> getNextSteps(Position previous, Position current, Direction direction, Board board) 
+    {
         List<NextStep> nextSteps = new ArrayList<>();
 
         Position next = board.getNeighborsDirection(current, direction);
@@ -123,15 +96,12 @@ public class BishopStrategy implements MovementStrategy {
         return nextSteps;
     }
 
-    private boolean isCenter(Position position) {
-        return position.getLigne() == 4
-                && (position.getColonne() == 4 || position.getColonne() == 5);
+    public boolean isCenter(Position position) {
+        return position.getLigne() == 4 && (position.getColonne() == 4 || position.getColonne() == 5);
     }
 
-    private List<NextStep> getCenterSteps(Position previous,
-                                          Position current,
-                                          Direction direction,
-                                          Board board) {
+    public List<NextStep> getCenterSteps(Position previous, Position current, Direction direction, Board board) 
+    {
         List<NextStep> nextSteps = new ArrayList<>();
 
         int tier = current.getTiers();

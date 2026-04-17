@@ -9,6 +9,7 @@ public class ConsoleView {
     }
 
     public void displayPossibleMoves(Position p, Board board){
+        System.out.println("-------------------------------------------------------------------");
         System.out.println(board.getPiece(p).getMovementStrategy().getPossibleMoves(p, board,board.getPiece(p)));
     }
 }
