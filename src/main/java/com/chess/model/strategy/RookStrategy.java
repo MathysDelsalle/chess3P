@@ -26,7 +26,6 @@ public List<Move> getPossibleMoves(Position from, Board board, Piece piece) {
     for (Direction direction : ROOK_DIRECTIONS) {
         Position to = board.getNeighborsDirection(suite,direction);
         Set<Position> visited = new HashSet<>();
-
         while (to != null && !visited.contains(to)) {
             Piece target = board.getPiece(to);
             visited.add(to);
@@ -44,7 +43,7 @@ public List<Move> getPossibleMoves(Position from, Board board, Piece piece) {
                 previous = board.getNeighborsDirection(suite, direction.switchDir());
             }
 
-            if(suite.getIsJunction() && previous!=null && previous.getIsJunction()){
+            if(suite.getIsJunction() && previous!=null && previous.getIsJunction() && suite.getTiers()!=previous.getTiers()){
                 suite=to;
                 to = board.getNeighborsDirection(to, direction.switchDir());
             }

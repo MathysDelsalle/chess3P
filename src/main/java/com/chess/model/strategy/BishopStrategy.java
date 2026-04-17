@@ -27,11 +27,20 @@ public class BishopStrategy implements MovementStrategy {
     @Override
     public List<Move> getPossibleMoves(Position from, Board board, Piece piece) {
         Set<Move> moves = new LinkedHashSet<>();
-        for (Direction startDirection : BISHOP_DIRECTIONS) {
-            Position first = board.getNeighborsDirection(from, startDirection);
 
-            if (first != null) {
-                exploreDirection(from,from,first,startDirection,board,piece,moves,new HashSet<>());
+        if (isCenter(from)) {
+            List<NextStep> startSteps = getStartStepsFromCenter(from, board);
+
+            for (NextStep step : startSteps) {
+                exploreDirection(from, from, step.getPosition(), step.getDirection(), board, piece, moves, new HashSet<>());
+            }
+        } else {
+            for (Direction startDirection : BISHOP_DIRECTIONS) {
+                Position first = board.getNeighborsDirection(from, startDirection);
+
+                if (first != null) {
+                    exploreDirection(from, from, first, startDirection, board, piece, moves, new HashSet<>());
+                }
             }
         }
 
@@ -74,6 +83,7 @@ public class BishopStrategy implements MovementStrategy {
             if (!centerSteps.isEmpty()) {
                 return centerSteps;
             }
+            
         }
 
         // Cas normal
@@ -81,7 +91,6 @@ public class BishopStrategy implements MovementStrategy {
 
         if (next != null) {
             Direction nextDirection = direction;
-
             if (current.getIsJunction() && next.getIsJunction()) {
                 nextDirection = direction.switchDir();
             }
@@ -122,6 +131,30 @@ public class BishopStrategy implements MovementStrategy {
                 }
 
                 return nextSteps;
+            }else{
+                Position next1 = board.findPosition(board.getPositions(), 2, 4, 4);
+                Position next2 = board.findPosition(board.getPositions(), 3, 4, 4);
+                Position next3 = board.findPosition(board.getPositions(), 2, 4, 6);
+                Position next4 = board.findPosition(board.getPositions(), 1, 3, 3);
+                Position next5 = board.findPosition(board.getPositions(), 1, 3, 5);
+
+                if (next1 != null) {
+                    nextSteps.add(new NextStep(next1, Direction.DIAG_DOWN_LEFT));
+                }
+                if (next2 != null) {
+                    nextSteps.add(new NextStep(next2, Direction.DIAG_DOWN_LEFT));
+                }
+                if (next3 != null) {
+                    nextSteps.add(new NextStep(next1, Direction.DIAG_DOWN_RIGHT));
+                }
+                if (next4 != null) {
+                    nextSteps.add(new NextStep(next2, Direction.DIAG_DOWN_LEFT));
+                }
+                if (next5 != null) {
+                    nextSteps.add(new NextStep(next1, Direction.DIAG_DOWN_RIGHT));
+                }
+                
+
             }
         }
 
@@ -227,5 +260,97 @@ public class BishopStrategy implements MovementStrategy {
         }
 
         return nextSteps;
+    }
+
+    private void addStepIfExists(List<NextStep> steps, Position p, Direction d) {
+    if (p != null) {
+        steps.add(new NextStep(p, d));
+    }
+}
+
+    private List<NextStep> getStartStepsFromCenter(Position from, Board board) {
+        List<NextStep> steps = new ArrayList<>();
+
+        int tier = from.getTiers();
+        int ligne = from.getLigne();
+        int colonne = from.getColonne();
+
+        if (tier==1 && ligne==4) {
+            if(colonne==4){
+                //246
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier+1, ligne, colonne+2),Direction.DIAG_DOWN_RIGHT);
+                //133
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier, ligne-1, colonne-1),Direction.DIAG_DOWN_LEFT);
+                //135
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier, ligne-1, colonne+1),Direction.DIAG_DOWN_RIGHT);
+                //244
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier+1, ligne, colonne),Direction.DIAG_DOWN_LEFT);
+                //344
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier+2, ligne, colonne),Direction.DIAG_DOWN_LEFT);
+            }else if(colonne==5) {
+                //343
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier+2, ligne, colonne-2),Direction.DIAG_DOWN_LEFT);
+                //134
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier, ligne-1, colonne-1),Direction.DIAG_DOWN_LEFT);
+                //136
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier, ligne-1, colonne+1),Direction.DIAG_DOWN_RIGHT);
+                //255
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier+1, ligne, colonne),Direction.DIAG_DOWN_RIGHT);
+                //355
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier+2, ligne, colonne),Direction.DIAG_DOWN_RIGHT);
+            }
+            
+        }else if(tier==2 && ligne==4){
+             if(colonne==4){
+                //346
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier+1, ligne, colonne+2),Direction.DIAG_DOWN_RIGHT);
+                //233
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier, ligne-1, colonne-1),Direction.DIAG_DOWN_LEFT);
+                //235
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier, ligne-1, colonne+1),Direction.DIAG_DOWN_RIGHT);
+                //344
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier+1, ligne, colonne),Direction.DIAG_DOWN_LEFT);
+                //144
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier-1, ligne, colonne),Direction.DIAG_DOWN_LEFT);
+            }else if(colonne==5) {
+                //143
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier-1, ligne, colonne-2),Direction.DIAG_DOWN_LEFT);
+                //234
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier, ligne-1, colonne-1),Direction.DIAG_DOWN_LEFT);
+                //236
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier, ligne-1, colonne+1),Direction.DIAG_DOWN_RIGHT);
+                //355
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier+1, ligne, colonne),Direction.DIAG_DOWN_RIGHT);
+                //155
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier-1, ligne, colonne),Direction.DIAG_DOWN_RIGHT);
+            }
+            
+        }else if(tier==3 && ligne==4){
+            if(colonne==4){
+                //146
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier-2, ligne, colonne+2),Direction.DIAG_DOWN_RIGHT);
+                //333
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier, ligne-1, colonne-1),Direction.DIAG_DOWN_LEFT);
+                //335
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier, ligne-1, colonne+1),Direction.DIAG_DOWN_RIGHT);
+                //144
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier-2, ligne, colonne),Direction.DIAG_DOWN_LEFT);
+                //244
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier+1, ligne, colonne),Direction.DIAG_DOWN_LEFT);
+            }else if(colonne==5) {
+                //243
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier-1, ligne, colonne-2),Direction.DIAG_DOWN_LEFT);
+                //334
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier, ligne-1, colonne-1),Direction.DIAG_DOWN_LEFT);
+                //336
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier, ligne-1, colonne+1),Direction.DIAG_DOWN_RIGHT);
+                //155
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier-2, ligne, colonne),Direction.DIAG_DOWN_RIGHT);
+                //255
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier-1, ligne, colonne),Direction.DIAG_DOWN_RIGHT);
+            }
+        }
+
+        return steps;
     }
 }

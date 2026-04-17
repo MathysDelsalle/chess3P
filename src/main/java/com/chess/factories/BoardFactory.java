@@ -97,6 +97,7 @@ public class BoardFactory {
            
 
         }else if(p.getColonne()==5){
+            addNeighborIfExists(board, p, Direction.RIGHT, board.findPosition(positions, p.getTiers(), p.getLigne(), p.getColonne() + 1));
             if(p.getTiers()==1){
                 addJunction(board, p, Direction.UP, board.findPosition(positions, p.getTiers()+2, p.getLigne(), p.getColonne()-1));
                 addJunction(board, p, Direction.DIAG_UP_RIGHT, board.findPosition(positions, p.getTiers()+2, p.getLigne(), p.getColonne() - 2));
@@ -247,7 +248,7 @@ public class BoardFactory {
         //white player ( player )
         board.setPiece(board.findPosition(positions, 1, 1, i), PieceFactory.createPiece(PieceType.Rook, p, Color.white,PieceFactory.getStrategies(),1));
         board.setPiece(board.findPosition(positions, 1, 1, i+1), PieceFactory.createPiece(PieceType.Knight, p, Color.white,PieceFactory.getStrategies(),1));
-        board.setPiece(board.findPosition(positions, 1, 3, 4), PieceFactory.createPiece(PieceType.Bishop, p, Color.white,PieceFactory.getStrategies(),1));
+        board.setPiece(board.findPosition(positions, 1, 4, 4), PieceFactory.createPiece(PieceType.Bishop, p, Color.white,PieceFactory.getStrategies(),1));
         board.setPiece(board.findPosition(positions, 1, 1, i+3), PieceFactory.createPiece(PieceType.Queen, p, Color.white,PieceFactory.getStrategies(),1));
         board.setPiece(board.findPosition(positions, 1, 1, i+4), PieceFactory.createPiece(PieceType.King, p, Color.white,PieceFactory.getStrategies(),1));
         board.setPiece(board.findPosition(positions, 1, 1, i+5), PieceFactory.createPiece(PieceType.Bishop, p, Color.white,PieceFactory.getStrategies(),1));
@@ -258,7 +259,7 @@ public class BoardFactory {
         for(i=1;i<9;i++){
         board.setPiece(board.findPosition(positions, 3, 2, i), PieceFactory.createPiece(PieceType.Pawn, b2, Color.red,PieceFactory.getStrategies(),3));
         board.setPiece(board.findPosition(positions, 2, 2, i), PieceFactory.createPiece(PieceType.Pawn, b1, Color.blue,PieceFactory.getStrategies(),2));
-        board.setPiece(board.findPosition(positions, 1, 2, i), PieceFactory.createPiece(PieceType.Pawn, p, Color.white,PieceFactory.getStrategies(),1));
+        //board.setPiece(board.findPosition(positions, 1, 2, i), PieceFactory.createPiece(PieceType.Pawn, p, Color.white,PieceFactory.getStrategies(),1));
         }
 
         /*DEBUG

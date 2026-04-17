@@ -1,15 +1,27 @@
 package model.strategy;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
-import model.*;
+import model.Board;
+import model.Move;
+import model.Piece;
+import model.Position;
 
-public class QueenStrategy implements MovementStrategy{
-    
+public class QueenStrategy implements MovementStrategy {
+
+    private final RookStrategy rookStrategy = new RookStrategy();
+    private final BishopStrategy bishopStrategy = new BishopStrategy();
+
     @Override
-    public List<Position> getPossibleMoves(Position from, Board board, Piece piece){
+    public List<Move> getPossibleMoves(Position from, Board board, Piece piece) {
+        Set<Move> moves = new LinkedHashSet<>();
 
-        return new ArrayList<>();
+        moves.addAll(rookStrategy.getPossibleMoves(from, board, piece));
+        moves.addAll(bishopStrategy.getPossibleMoves(from, board, piece));
+
+        return new ArrayList<>(moves);
     }
 }
