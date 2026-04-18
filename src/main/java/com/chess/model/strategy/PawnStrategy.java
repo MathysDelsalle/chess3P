@@ -41,12 +41,12 @@ public class PawnStrategy implements MovementStrategy{
                     to = board.getNeighborsDirection(from, dir.switchDir());
                     target = board.getPiece(to);
                     if(target!=null && !target.getOwner().equals(piece.getOwner())){
-                        moves.add(new Move(from, to, dir.switchDir()));
+                        moves.add(new Move(from, to, dir.switchDir(),piece));
                     }
                 }
                 else{
                     if(target!=null && !target.getOwner().equals(piece.getOwner())){
-                        moves.add(new Move(from, to, dir));
+                        moves.add(new Move(from, to, dir,piece));
                     }
                 
                 }
@@ -58,19 +58,18 @@ public class PawnStrategy implements MovementStrategy{
         //ce code vérifie d'abord si la piece a bougée puis si elle n'a pas bougé vérifie qu'l n'y a pas de piece sur la case d'après
         //s'il n'y a pas de piece elle ajoute le mouvement et vérifie s'il n'y a pas de piece sur la case encore après 
         //s'il n'y a encore pas de piece elle ajoute le mouvement de deux case (coup spécial pion)
-        piece.setHasMoved(true);
         if(!piece.getHasMoved()){
             Position to = board.getNeighborsDirection(from, normalDir);
             Piece target = board.getPiece(to);
             if(target==null){
-                moves.add(new Move(from, to , normalDir));
+                moves.add(new Move(from, to , normalDir,piece));
                 Position temp = board.getNeighborsDirection(to, normalDir);
                 if(to.getIsJunction() && temp.getIsJunction()){
                     temp=board.getNeighborsDirection(to, normalDir.switchDir());
                 }
                 target = board.getPiece(temp);
                 if(target==null){
-                    moves.add(new Move(from, temp , normalDir));
+                    moves.add(new Move(from, temp , normalDir,piece));
                 }
                 
             }
@@ -92,12 +91,12 @@ public class PawnStrategy implements MovementStrategy{
                     if(previous != null && from.getIsJunction() && previous.getIsJunction()){
                         target = board.getPiece(to);
                         if(target==null){
-                            moves.add(new Move(from,to,normalDir.switchDir()));
+                            moves.add(new Move(from,to,normalDir.switchDir(),piece));
                         }
                         
                     }
                     else{
-                        moves.add(new Move(from,to,normalDir));
+                        moves.add(new Move(from,to,normalDir,piece));
                         
                     }
                 }

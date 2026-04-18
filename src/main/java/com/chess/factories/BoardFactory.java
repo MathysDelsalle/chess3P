@@ -248,9 +248,9 @@ public class BoardFactory {
         //white player ( player )
         board.setPiece(board.findPosition(positions, 1, 1, i), PieceFactory.createPiece(PieceType.Rook, p, Color.white,PieceFactory.getStrategies(),1));
         board.setPiece(board.findPosition(positions, 1, 1, i+1), PieceFactory.createPiece(PieceType.Knight, p, Color.white,PieceFactory.getStrategies(),1));
-        board.setPiece(board.findPosition(positions, 1, 4, 4), PieceFactory.createPiece(PieceType.Bishop, p, Color.white,PieceFactory.getStrategies(),1));
+        board.setPiece(board.findPosition(positions, 1, 1, i+2), PieceFactory.createPiece(PieceType.Bishop, p, Color.white,PieceFactory.getStrategies(),1));
         board.setPiece(board.findPosition(positions, 1, 1, i+3), PieceFactory.createPiece(PieceType.Queen, p, Color.white,PieceFactory.getStrategies(),1));
-        board.setPiece(board.findPosition(positions, 1, 1, i+4), PieceFactory.createPiece(PieceType.King, p, Color.white,PieceFactory.getStrategies(),1));
+        board.setPiece(board.findPosition(positions, 1, 4, 4), PieceFactory.createPiece(PieceType.King, p, Color.white,PieceFactory.getStrategies(),1));
         board.setPiece(board.findPosition(positions, 1, 1, i+5), PieceFactory.createPiece(PieceType.Bishop, p, Color.white,PieceFactory.getStrategies(),1));
         board.setPiece(board.findPosition(positions, 1, 1, i+6), PieceFactory.createPiece(PieceType.Knight, p, Color.white,PieceFactory.getStrategies(),1));
         board.setPiece(board.findPosition(positions, 1, 1, i+7), PieceFactory.createPiece(PieceType.Rook, p, Color.white,PieceFactory.getStrategies(),1));
@@ -259,7 +259,7 @@ public class BoardFactory {
         for(i=1;i<9;i++){
         board.setPiece(board.findPosition(positions, 3, 2, i), PieceFactory.createPiece(PieceType.Pawn, b2, Color.red,PieceFactory.getStrategies(),3));
         board.setPiece(board.findPosition(positions, 2, 2, i), PieceFactory.createPiece(PieceType.Pawn, b1, Color.blue,PieceFactory.getStrategies(),2));
-        //board.setPiece(board.findPosition(positions, 1, 2, i), PieceFactory.createPiece(PieceType.Pawn, p, Color.white,PieceFactory.getStrategies(),1));
+        board.setPiece(board.findPosition(positions, 1, 2, i), PieceFactory.createPiece(PieceType.Pawn, p, Color.white,PieceFactory.getStrategies(),1));
         }
 
         /*DEBUG

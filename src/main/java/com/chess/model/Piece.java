@@ -1,6 +1,7 @@
 package model;
 
 import java.util.Map;
+import java.util.Objects;
 
 import model.strategy.MovementStrategy;
 
@@ -12,11 +13,15 @@ public class Piece {
     private MovementStrategy movementStrategy;
     private boolean hasMoved=false;
     private int StartTier;
+    private final int id;
+    private static int nextid=0;
 
     public Piece(PieceType type, People owner, Color color, int tier) {
         this.type = type;
         this.owner = owner;
         this.color = color;
+        this.id=nextid++;
+        this.StartTier=tier;
     }
 
 
@@ -58,4 +63,18 @@ public class Piece {
     public int getStartTier() {
         return StartTier;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Piece)) return false;
+        Piece p = (Piece) o;
+        return id==p.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
+

@@ -59,10 +59,10 @@ public class BishopStrategy implements MovementStrategy {
         Piece target = board.getPiece(current);
 
         if (target == null) {
-            moves.add(new Move(from, current, currentDirection));
+            moves.add(new Move(from, current, currentDirection,piece));
         } else {
             if (!target.getOwner().equals(piece.getOwner())) {
-                moves.add(new Move(from, current, currentDirection));
+                moves.add(new Move(from, current, currentDirection,piece));
             }
             return;
         }

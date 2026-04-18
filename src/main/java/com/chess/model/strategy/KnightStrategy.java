@@ -225,7 +225,7 @@ public class KnightStrategy implements MovementStrategy {
         Piece target = board.getPiece(destination);
 
         if (target == null || !target.getOwner().equals(piece.getOwner())) {
-            uniqueMoves.putIfAbsent(destination, new Move(from, destination, moveDirection));
+            uniqueMoves.putIfAbsent(destination, new Move(from, destination, moveDirection,piece));
         }
     }
 }

@@ -31,10 +31,10 @@ public List<Move> getPossibleMoves(Position from, Board board, Piece piece) {
             visited.add(to);
 
             if (target == null) {
-                moves.add(new Move(from, to, direction));
+                moves.add(new Move(from, to, direction,piece));
             } else {
                 if (!target.getOwner().equals(piece.getOwner())) {
-                    moves.add(new Move(from, to, direction));
+                    moves.add(new Move(from, to, direction,piece));
                 }
                 break;
             }
