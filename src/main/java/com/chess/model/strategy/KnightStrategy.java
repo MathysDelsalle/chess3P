@@ -33,10 +33,7 @@ public class KnightStrategy implements MovementStrategy {
         return new ArrayList<>(uniqueMoves.values());
     }
 
-    private void addStandardKnightMoves(Position from,
-                                        Board board,
-                                        Piece piece,
-                                        Map<Position, Move> uniqueMoves) {
+    public void addStandardKnightMoves(Position from, Board board, Piece piece, Map<Position, Move> uniqueMoves) {
         for (Direction firstDir : KNIGHT_DIRECTIONS) {
 
             Position afterTwo = moveStepsKnight(board, from, firstDir, 2);
@@ -60,15 +57,11 @@ public class KnightStrategy implements MovementStrategy {
             }
         }
     }
-
     /**
      * Cas spécial du centre :
-     * on ajoute uniquement les destinations réellement autorisées.
+     * on ajoute uniquement les destinations réellement autorisées
      */
-    private void addCenterKnightMoves(Position from,
-                                      Board board,
-                                      Piece piece,
-                                      Map<Position, Move> uniqueMoves) {
+    public void addCenterKnightMoves(Position from, Board board, Piece piece, Map<Position, Move> uniqueMoves) {
         int tiers = from.getTiers();
         int ligne = from.getLigne();
         int colonne = from.getColonne();
@@ -150,22 +143,16 @@ public class KnightStrategy implements MovementStrategy {
         }
     }
 
-    private void addCenterMove(Board board,
-                               Piece piece,
-                               Map<Position, Move> uniqueMoves,
-                               Position from,
-                               int tiers,
-                               int ligne,
-                               int colonne) {
+    public void addCenterMove(Board board, Piece piece, Map<Position, Move> uniqueMoves,  Position from, int tiers, int ligne, int colonne) {
         Position destination = board.findPosition(board.getPositions(), tiers, ligne, colonne);
         addMoveIfValid(uniqueMoves, from, destination, Direction.UP, board, piece);
     }
 
-    private boolean isCenter(Position p) {
+    public boolean isCenter(Position p) {
         return p.getLigne() == 4 && (p.getColonne() == 4 || p.getColonne() == 5);
     }
 
-    private Position moveStepsKnight(Board board, Position start, Direction direction, int steps) {
+    public Position moveStepsKnight(Board board, Position start, Direction direction, int steps) {
         Position current = start;
 
         for (int i = 0; i < steps; i++) {
@@ -181,9 +168,7 @@ public class KnightStrategy implements MovementStrategy {
         return current;
     }
 
-    private boolean isValidKnightDestination(Position from,
-                                             Position intermediate,
-                                             Position destination) {
+    public boolean isValidKnightDestination(Position from, Position intermediate, Position destination) {
         if (destination == null) {
             return false;
         }
@@ -199,7 +184,7 @@ public class KnightStrategy implements MovementStrategy {
         return true;
     }
 
-    private Direction[] getPerpendicularDirections(Direction direction) {
+    public Direction[] getPerpendicularDirections(Direction direction) {
         switch (direction) {
             case UP:
             case DOWN:
@@ -212,12 +197,7 @@ public class KnightStrategy implements MovementStrategy {
         }
     }
 
-    private void addMoveIfValid(Map<Position, Move> uniqueMoves,
-                                Position from,
-                                Position destination,
-                                Direction moveDirection,
-                                Board board,
-                                Piece piece) {
+    public void addMoveIfValid(Map<Position, Move> uniqueMoves, Position from, Position destination, Direction moveDirection, Board board, Piece piece) {
         if (destination == null) {
             return;
         }
@@ -227,5 +207,137 @@ public class KnightStrategy implements MovementStrategy {
         if (target == null || !target.getOwner().equals(piece.getOwner())) {
             uniqueMoves.putIfAbsent(destination, new Move(from, destination, moveDirection,piece));
         }
+    }
+
+    public void addStandardKnightAttacks(Position from, Board board, List<Position> attackedSquares) {
+    for (Direction firstDir : KNIGHT_DIRECTIONS) {
+
+        Position afterTwo = moveStepsKnight(board, from, firstDir, 2);
+        if (afterTwo != null) {
+            for (Direction turnDir : getPerpendicularDirections(firstDir)) {
+                Position destination = moveStepsKnight(board, afterTwo, turnDir, 1);
+                addIfExists(attackedSquares, destination);
+            }
+        }
+
+        Position afterOne = moveStepsKnight(board, from, firstDir, 1);
+        if (afterOne != null) {
+            for (Direction turnDir : getPerpendicularDirections(firstDir)) {
+                Position destination = moveStepsKnight(board, afterOne, turnDir, 2);
+                addIfExists(attackedSquares, destination);
+            }
+        }
+    }
+}
+
+    public void addCenterKnightAttacks(Position from, Board board, List<Position> attackedSquares) {
+        int tiers = from.getTiers();
+        int ligne = from.getLigne();
+        int colonne = from.getColonne();
+
+        // on réutilise exactement la logique existante plus haut
+        if (ligne == 4 && colonne == 4) {
+            if (tiers == 1) {
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 1, 2, 5));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 1, 2, 3));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 1, 3, 2));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 1, 3, 6));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 2, 4, 7));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 2, 3, 6));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 2, 3, 4));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 2, 4, 3));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 3, 3, 4));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 3, 4, 3));
+            } else if (tiers == 2) {
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 2, 2, 5));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 2, 2, 3));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 2, 3, 2));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 2, 3, 6));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 3, 4, 7));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 3, 3, 6));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 3, 3, 4));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 3, 4, 3));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 1, 3, 4));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 1, 4, 3));
+            } else if (tiers == 3) {
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 3, 2, 5));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 3, 2, 3));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 3, 3, 2));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 3, 3, 6));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 1, 4, 7));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 1, 3, 6));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 1, 3, 4));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 1, 4, 3));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 2, 3, 4));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 2, 4, 3));
+            }
+        }
+
+        else if (ligne == 4 && colonne == 5) {
+            if (tiers == 1) {
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 1, 3, 3));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 1, 3, 7));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 1, 2, 4));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 1, 2, 6));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 2, 4, 6));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 2, 3, 5));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 3, 3, 3));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 3, 4, 2));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 3, 3, 5));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 3, 4, 6));
+            } else if (tiers == 2) {
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 2, 3, 3));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 2, 3, 7));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 2, 2, 4));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 2, 2, 6));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 3, 4, 6));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 3, 3, 5));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 1, 3, 3));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 1, 4, 2));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 1, 3, 5));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 1, 4, 6));
+            } else if (tiers == 3) {
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 3, 3, 3));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 3, 3, 7));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 3, 2, 4));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 3, 2, 6));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 1, 4, 6));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 1, 3, 5));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 2, 3, 3));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 2, 4, 2));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 2, 3, 5));
+                addIfExists(attackedSquares, board.findPosition(board.getPositions(), 2, 4, 6));
+            }
+        }
+    }
+
+    public void addIfExists(List<Position> list, Position p) {
+        if (p != null && !list.contains(p)) {
+            list.add(p);
+        }
+    }
+
+    @Override
+    public MovementStrategy.AttackInfo getAttackedAndProtectedSquares(Position from, Board board, Piece piece) {
+
+        List<Position> attackedSquares = new ArrayList<>();
+        List<Position> protectedSquares = new ArrayList<>();
+
+        // On reprend les moves du knight
+        List<Move> moves = getPossibleMoves(from, board, piece);
+
+        // Les cases atteignables = cases attaquées
+        for (Move m : moves) {
+            attackedSquares.add(m.getTo());
+        }
+
+        // ajout des cases ou il y a des alliés
+        if (isCenter(from)) {
+            addCenterKnightAttacks(from, board, attackedSquares);
+        } else {
+            addStandardKnightAttacks(from, board, attackedSquares);
+        }
+
+        return new MovementStrategy.AttackInfo(attackedSquares, protectedSquares);
     }
 }

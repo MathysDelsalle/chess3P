@@ -1,7 +1,5 @@
 package factories;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import model.*;
@@ -22,6 +20,7 @@ public class BoardFactory {
         connectPositions(board, board.getPositions());
         placeInitialPieces(board, board.getPositions(), p, b1, b2);
 
+        board.recomputeAttackMaps();
         return board;
     }
 
@@ -250,7 +249,7 @@ public class BoardFactory {
         board.setPiece(board.findPosition(positions, 1, 1, i+1), PieceFactory.createPiece(PieceType.Knight, p, Color.white,PieceFactory.getStrategies(),1));
         board.setPiece(board.findPosition(positions, 1, 1, i+2), PieceFactory.createPiece(PieceType.Bishop, p, Color.white,PieceFactory.getStrategies(),1));
         board.setPiece(board.findPosition(positions, 1, 1, i+3), PieceFactory.createPiece(PieceType.Queen, p, Color.white,PieceFactory.getStrategies(),1));
-        board.setPiece(board.findPosition(positions, 1, 4, 4), PieceFactory.createPiece(PieceType.King, p, Color.white,PieceFactory.getStrategies(),1));
+        board.setPiece(board.findPosition(positions, 1, 1, i+4), PieceFactory.createPiece(PieceType.King, p, Color.white,PieceFactory.getStrategies(),1));
         board.setPiece(board.findPosition(positions, 1, 1, i+5), PieceFactory.createPiece(PieceType.Bishop, p, Color.white,PieceFactory.getStrategies(),1));
         board.setPiece(board.findPosition(positions, 1, 1, i+6), PieceFactory.createPiece(PieceType.Knight, p, Color.white,PieceFactory.getStrategies(),1));
         board.setPiece(board.findPosition(positions, 1, 1, i+7), PieceFactory.createPiece(PieceType.Rook, p, Color.white,PieceFactory.getStrategies(),1));

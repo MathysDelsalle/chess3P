@@ -39,8 +39,7 @@ public class Piece {
 
     @Override
     public String toString() {
-
-        return "This " + type + " belongs to " + owner.toString() + "\n";
+        return type + " (" + color + ")";
     }
 
     public MovementStrategy getMovementStrategy() {

@@ -17,6 +17,8 @@ public class Main {
 
         Position p = board.findPosition(board.getPositions(),1, 4, 4);
 
-        consoleView.displayPossibleMoves(p, board);
+        //consoleView.displayPossibleMoves(p, board);
+        //consoleView.displayAttackMap(board.getUnderAttack());
+        consoleView.displayControledMap(board.getProtectedRightNow());
     }
 }

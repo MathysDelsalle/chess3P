@@ -111,4 +111,44 @@ public class PawnStrategy implements MovementStrategy{
         return moves;
     }
     
+
+    @Override
+    public MovementStrategy.AttackInfo getAttackedAndProtectedSquares(Position from, Board board, Piece piece) {
+
+        List<Position> attackedSquares = new ArrayList<>();
+        List<Position> protectedSquares = new ArrayList<>();
+
+        Direction normalDir = Direction.UP;
+
+        Direction[] PAWN_DIRECTIONS = {
+            Direction.DIAG_UP_LEFT,
+            Direction.DIAG_UP_RIGHT,
+            Direction.DIAG_CENTRE_LEFT,
+            Direction.DIAG_CENTRE_RIGHT
+        };
+
+        for (Direction dir : PAWN_DIRECTIONS) {
+
+            Position previous = board.getNeighborsDirection(from, normalDir);
+            Position to = board.getNeighborsDirection(from, dir.switchDir());
+
+            if (piece.getStartTier() == from.getTiers()) {
+                previous = board.getNeighborsDirection(from, normalDir.switchDir());
+                to = board.getNeighborsDirection(from, dir);
+            }
+
+            if (to != null) {
+                if (previous != null && from.getIsJunction() && previous.getIsJunction()) {
+                    to = board.getNeighborsDirection(from, dir.switchDir());
+                }
+
+                if (to != null && !attackedSquares.contains(to)) {
+                    attackedSquares.add(to);
+                }
+            }
+        }
+
+        return new MovementStrategy.AttackInfo(attackedSquares, protectedSquares);
+    }
+
 }

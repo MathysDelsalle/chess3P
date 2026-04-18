@@ -10,6 +10,23 @@ import model.*;
 
 public class RookStrategy implements MovementStrategy {
 
+//helper
+public Position getNextRookPosition(Position from, Position to, Direction direction, Board board, Piece piece) {
+    Position previous = board.getNeighborsDirection(to, direction);
+
+    if (from.getTiers() == to.getTiers()) {
+        previous = board.getNeighborsDirection(to, direction.switchDir());
+    }
+    if(from.getTiers()!=to.getTiers() && previous!=null && previous.getIsJunction() && to.getIsJunction()){
+        return board.getNeighborsDirection(to, direction.switchDir());
+    }
+    else if(from.getTiers()!=to.getTiers() && !to.getIsJunction()){
+        return board.getNeighborsDirection(to, direction.switchDir());
+    }
+
+    return board.getNeighborsDirection(to, direction);
+}
+
 @Override
 public List<Move> getPossibleMoves(Position from, Board board, Piece piece) {
     List<Move> moves = new ArrayList<>();
@@ -21,7 +38,6 @@ public List<Move> getPossibleMoves(Position from, Board board, Piece piece) {
         Direction.RIGHT
     };
 
-//chercher comment aller de 2/4/8 vers 2/4/7
     Position suite = from;
     for (Direction direction : ROOK_DIRECTIONS) {
         Position to = board.getNeighborsDirection(suite,direction);
@@ -38,19 +54,8 @@ public List<Move> getPossibleMoves(Position from, Board board, Piece piece) {
                 }
                 break;
             }
-            Position previous = board.getNeighborsDirection(suite, direction);
-            if(piece.getStartTier()==suite.getTiers()){
-                previous = board.getNeighborsDirection(suite, direction.switchDir());
-            }
-
-            if(suite.getIsJunction() && previous!=null && previous.getIsJunction() && suite.getTiers()!=previous.getTiers()){
-                suite=to;
-                to = board.getNeighborsDirection(to, direction.switchDir());
-            }
-            else{
-                suite=to;
-                to = board.getNeighborsDirection(to, direction);
-            }
+            suite=to;
+            to= getNextRookPosition(from,suite, direction, board, piece);
             
         }
         suite=from;
@@ -58,4 +63,41 @@ public List<Move> getPossibleMoves(Position from, Board board, Piece piece) {
 
     return moves;
 }
+
+@Override
+public MovementStrategy.AttackInfo getAttackedAndProtectedSquares(Position from, Board board, Piece piece) {
+        List<Position> attackedSquares = new ArrayList<>();
+        List<Position> protectedSquares = new ArrayList<>();
+
+        Direction[] ROOK_DIRECTIONS = {
+        Direction.UP,
+        Direction.DOWN,
+        Direction.LEFT,
+        Direction.RIGHT
+    };
+
+        for (Direction dir : ROOK_DIRECTIONS) {
+            Position to = board.getNeighborsDirection(from, dir);
+            boolean pieceRencontree = false;
+
+            while (to != null) {
+                Piece target = board.getPiece(to);
+
+                if (!pieceRencontree) {
+                    attackedSquares.add(to);
+                } else {
+                    protectedSquares.add(to);
+                }
+
+                if (target != null) {
+                    pieceRencontree = true;
+                }
+
+                to = getNextRookPosition(from,to, dir, board, piece);
+            }
+        }
+
+        return new MovementStrategy.AttackInfo(attackedSquares, protectedSquares);
+    }
+
 }

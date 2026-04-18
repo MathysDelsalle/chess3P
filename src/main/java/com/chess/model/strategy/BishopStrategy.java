@@ -262,13 +262,13 @@ public class BishopStrategy implements MovementStrategy {
         return nextSteps;
     }
 
-    private void addStepIfExists(List<NextStep> steps, Position p, Direction d) {
+    public void addStepIfExists(List<NextStep> steps, Position p, Direction d) {
     if (p != null) {
         steps.add(new NextStep(p, d));
     }
 }
 
-    private List<NextStep> getStartStepsFromCenter(Position from, Board board) {
+    public List<NextStep> getStartStepsFromCenter(Position from, Board board) {
         List<NextStep> steps = new ArrayList<>();
 
         int tier = from.getTiers();
@@ -353,4 +353,66 @@ public class BishopStrategy implements MovementStrategy {
 
         return steps;
     }
+
+    // --------- PARTIE ATTAQUES / CASES LATENTES ---------
+
+    @Override
+    public MovementStrategy.AttackInfo getAttackedAndProtectedSquares(Position from, Board board, Piece piece) {
+        Set<Position> attackedSquares = new HashSet<>();
+        Set<Position> protectedSquares = new HashSet<>();
+
+        if (isCenter(from)) {
+            List<NextStep> startSteps = getStartStepsFromCenter(from, board);
+
+            for (NextStep step : startSteps) {
+                exploreAttackDirection(from, from, step.getPosition(), step.getDirection(), board, 
+                    attackedSquares, protectedSquares, new HashSet<>(), false);
+            }
+        } else {
+            for (Direction startDirection : BISHOP_DIRECTIONS) {
+                Position first = board.getNeighborsDirection(from, startDirection);
+
+                if (first != null) {
+                    exploreAttackDirection(from, from, first, startDirection, board, 
+                        attackedSquares, protectedSquares, new HashSet<>(), false);
+                }
+            }
+        }
+
+        return new MovementStrategy.AttackInfo(new ArrayList<>(attackedSquares), new ArrayList<>(protectedSquares));
+    }
+
+    public void exploreAttackDirection(Position from, Position previous, Position current, Direction currentDirection, Board board, 
+        Set<Position> attackedSquares, Set<Position> protectedSquares, Set<Position> visited, boolean pieceEncountered) {
+
+        if (current == null || visited.contains(current)) {
+            return;
+        }
+
+        visited.add(current);
+
+        if (!pieceEncountered) {
+            attackedSquares.add(current);
+        } else {
+            protectedSquares.add(current);
+        }
+
+        Piece target = board.getPiece(current);
+        boolean nextPieceEncountered = pieceEncountered;
+
+        if (target != null) {
+            if (pieceEncountered) {
+                return; // on s'arrête au 2e bloqueur
+            }
+            nextPieceEncountered = true;
+        }
+
+        List<NextStep> nextSteps = getNextSteps(previous, current, currentDirection, board);
+
+        for (NextStep step : nextSteps) {
+            exploreAttackDirection(from, current, step.getPosition(), step.getDirection(), board, attackedSquares, protectedSquares, 
+            new HashSet<>(visited), nextPieceEncountered);
+        }
+    }
+
 }

@@ -1,5 +1,8 @@
 package model;
-import java.util.*; 
+import java.util.*;
+
+import model.strategy.MovementStrategy;
+import model.strategy.MovementStrategy.AttackInfo; 
 
 public class Board {
 
@@ -7,6 +10,8 @@ public class Board {
     private Map<Position, Piece> pieces = new HashMap<>();
     private Map<Position, Map<Direction,Position>> neighbors = new HashMap<>();
     private Map<Integer, Position> positions = new HashMap<>();
+    private Map<Position, Set<Piece>> underAttack = new HashMap<>();
+    private Map<Position, Set<Piece>> protectedRightNow = new HashMap<>();  
 
     //ajoute les cases dans neighbor et diag afin de dire ensuite les connexions entre elles
     public void addPosition(Position position) {
@@ -49,10 +54,17 @@ public class Board {
 
     public Position getPosition(int id) {
     return positions.get(id);
-}
+    }
 
+    public Map<Position, Set<Piece>> getProtectedRightNow() {
+        return protectedRightNow;
+    }
 
-public Position findPosition(Map<Integer, Position> positions, int tiers, int ligne, int colonne) {
+    public Map<Position, Set<Piece>> getUnderAttack() {
+        return underAttack;
+    }
+
+    public Position findPosition(Map<Integer, Position> positions, int tiers, int ligne, int colonne) {
     if (tiers < 1 || tiers > 3 || ligne < 1 || ligne > 4 || colonne < 1 || colonne > 8) {
         return null;
     }
@@ -61,5 +73,46 @@ public Position findPosition(Map<Integer, Position> positions, int tiers, int li
     return positions.get(id);
     }
 
+    public void recomputeAttackMaps(){
+        underAttack.clear();
+        protectedRightNow.clear();
+
+        for(Position pos : positions.values()){
+            Piece p = getPiece(pos);
+            if(p==null){
+                continue;
+            }
+            MovementStrategy strategy = p.getMovementStrategy();
+            AttackInfo info = strategy.getAttackedAndProtectedSquares(pos, this, p);
+
+            for (Position position : info.attackedSquares()) {
+                underAttack.computeIfAbsent(position, k -> new HashSet<>()).add(p);
+            }
+
+            for (Position position : info.protectedSquares()) {
+                protectedRightNow.computeIfAbsent(position, k -> new HashSet<>()).add(p);
+            }
+        }
+
+    }
+
+    public boolean isSquareUnderAttack(Position pos, People attacker) {
+        Set<Piece> attackers = underAttack.get(pos);
+
+        if (attackers == null) {
+            return false;
+        }
+
+        for (Piece p : attackers) {
+            if (p.getOwner().equals(attacker)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }
+
+
 

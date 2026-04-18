@@ -93,4 +93,49 @@ public class KingStrategy implements MovementStrategy{
         return moves;
     }
     
+
+    @Override
+    public MovementStrategy.AttackInfo getAttackedAndProtectedSquares(Position from, Board board, Piece piece) {
+
+        List<Position> attackedSquares = new ArrayList<>();
+        List<Position> protectedSquares = new ArrayList<>();
+
+        Direction[] KING_DIRECTIONS = {
+            Direction.UP,
+            Direction.DOWN,
+            Direction.RIGHT,
+            Direction.LEFT,
+            Direction.DIAG_UP_LEFT,
+            Direction.DIAG_UP_RIGHT,
+            Direction.DIAG_DOWN_LEFT,
+            Direction.DIAG_DOWN_RIGHT,
+            Direction.DIAG_CENTRE_LEFT,
+            Direction.DIAG_CENTRE_RIGHT
+        };
+
+        for (Direction dir : KING_DIRECTIONS) {
+
+            Position previous = board.getNeighborsDirection(from, dir.switchDir());
+            Position to = board.getNeighborsDirection(from, dir);
+
+            if (piece.getStartTier() == from.getTiers()) {
+                previous = board.getNeighborsDirection(from, dir);
+                to = board.getNeighborsDirection(from, dir.switchDir());
+            }
+
+            if (to != null) {
+
+                if (previous != null && from.getIsJunction() && previous.getIsJunction()) {
+                    to = board.getNeighborsDirection(from, dir.switchDir());
+                }
+
+                if (to != null && !attackedSquares.contains(to)) {
+                    attackedSquares.add(to);
+                }
+            }
+        }
+
+        return new MovementStrategy.AttackInfo(attackedSquares, protectedSquares);
+    }
+
 }
