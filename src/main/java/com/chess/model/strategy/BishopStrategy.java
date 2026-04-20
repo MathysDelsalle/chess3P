@@ -1,4 +1,4 @@
-package model.strategy;
+package com.chess.model.strategy;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -6,12 +6,13 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import model.Board;
-import model.Direction;
-import model.Move;
-import model.NextStep;
-import model.Piece;
-import model.Position;
+import com.chess.model.Board;
+import com.chess.model.Direction;
+import com.chess.model.Move;
+import com.chess.model.NextStep;
+import com.chess.model.Piece;
+import com.chess.model.Position;
+import com.chess.model.AttackInfo;
 
 public class BishopStrategy implements MovementStrategy {
 
@@ -357,7 +358,7 @@ public class BishopStrategy implements MovementStrategy {
     // --------- PARTIE ATTAQUES / CASES LATENTES ---------
 
     @Override
-    public MovementStrategy.AttackInfo getAttackedAndProtectedSquares(Position from, Board board, Piece piece) {
+    public AttackInfo getAttackedAndProtectedSquares(Position from, Board board, Piece piece) {
         Set<Position> attackedSquares = new HashSet<>();
         Set<Position> protectedSquares = new HashSet<>();
 
@@ -379,7 +380,7 @@ public class BishopStrategy implements MovementStrategy {
             }
         }
 
-        return new MovementStrategy.AttackInfo(new ArrayList<>(attackedSquares), new ArrayList<>(protectedSquares));
+        return new AttackInfo(new ArrayList<>(attackedSquares), new ArrayList<>(protectedSquares));
     }
 
     public void exploreAttackDirection(Position from, Position previous, Position current, Direction currentDirection, Board board, 

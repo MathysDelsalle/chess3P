@@ -1,11 +1,11 @@
-package view;
+package com.chess.view;
 
 import java.util.Map;
 import java.util.Set;
 
-import model.Board;
-import model.Piece;
-import model.Position;
+import com.chess.model.Board;
+import com.chess.model.Piece;
+import com.chess.model.Position;
 
 public class ConsoleView {
     public void diplayCreationReussie(){

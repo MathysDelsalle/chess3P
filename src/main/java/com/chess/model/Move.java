@@ -1,4 +1,4 @@
-package model;
+package com.chess.model;
 
 import java.util.Objects;
 
@@ -6,19 +6,13 @@ public class Move {
     private final Position from;
     private final Position to;
     private final Direction direction;
-    private final int distance;
     private final Piece piece;
 
-    public Move(Position from, Position to, Direction direction, int distance, Piece piece) {
-        this.from = from;
-        this.to = to;
-        this.direction = direction;
-        this.distance = distance;
-        this.piece=piece;
-    }
-
     public Move(Position from, Position to, Direction direction,Piece piece) {
-        this(from, to, direction, 1,piece);
+        this.from = from;
+        this.to=to;
+        this.direction=direction;
+        this.piece=piece;
     }
 
     public Position getFrom() {
@@ -31,10 +25,6 @@ public class Move {
 
     public Direction getDirection() {
         return direction;
-    }
-
-    public int getDistance() {
-        return distance;
     }
 
     @Override

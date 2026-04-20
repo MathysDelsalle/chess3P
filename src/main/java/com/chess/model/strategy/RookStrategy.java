@@ -1,11 +1,11 @@
-package model.strategy;
+package com.chess.model.strategy;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import model.*;
+import com.chess.model.*;
 
 
 public class RookStrategy implements MovementStrategy {
@@ -65,7 +65,7 @@ public List<Move> getPossibleMoves(Position from, Board board, Piece piece) {
 }
 
 @Override
-public MovementStrategy.AttackInfo getAttackedAndProtectedSquares(Position from, Board board, Piece piece) {
+public AttackInfo getAttackedAndProtectedSquares(Position from, Board board, Piece piece) {
         List<Position> attackedSquares = new ArrayList<>();
         List<Position> protectedSquares = new ArrayList<>();
 
@@ -97,7 +97,7 @@ public MovementStrategy.AttackInfo getAttackedAndProtectedSquares(Position from,
             }
         }
 
-        return new MovementStrategy.AttackInfo(attackedSquares, protectedSquares);
+        return new AttackInfo(attackedSquares, protectedSquares);
     }
 
 }

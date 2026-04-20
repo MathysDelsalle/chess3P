@@ -1,12 +1,12 @@
-package factories;
+package com.chess.factories;
 
 import java.util.Map;
 
-import model.Color;
-import model.People;
-import model.Piece;
-import model.PieceType;
-import model.strategy.*;
+import com.chess.model.Color;
+import com.chess.model.People;
+import com.chess.model.Piece;
+import com.chess.model.PieceType;
+import com.chess.model.strategy.*;
 
 //factory de pieces
 

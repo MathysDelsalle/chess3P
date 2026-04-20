@@ -1,9 +1,10 @@
-package model.strategy;
+package com.chess.model.strategy;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import model.*;
+import com.chess.model.*;
+import com.chess.model.AttackInfo;
 
 public class KingStrategy implements MovementStrategy{
  
@@ -95,7 +96,7 @@ public class KingStrategy implements MovementStrategy{
     
 
     @Override
-    public MovementStrategy.AttackInfo getAttackedAndProtectedSquares(Position from, Board board, Piece piece) {
+    public AttackInfo getAttackedAndProtectedSquares(Position from, Board board, Piece piece) {
 
         List<Position> attackedSquares = new ArrayList<>();
         List<Position> protectedSquares = new ArrayList<>();
@@ -135,7 +136,7 @@ public class KingStrategy implements MovementStrategy{
             }
         }
 
-        return new MovementStrategy.AttackInfo(attackedSquares, protectedSquares);
+        return new AttackInfo(attackedSquares, protectedSquares);
     }
 
 }

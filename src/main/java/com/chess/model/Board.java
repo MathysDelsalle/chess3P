@@ -1,8 +1,7 @@
-package model;
+package com.chess.model;
 import java.util.*;
 
-import model.strategy.MovementStrategy;
-import model.strategy.MovementStrategy.AttackInfo; 
+import com.chess.model.strategy.MovementStrategy;
 
 public class Board {
 
@@ -85,11 +84,11 @@ public class Board {
             MovementStrategy strategy = p.getMovementStrategy();
             AttackInfo info = strategy.getAttackedAndProtectedSquares(pos, this, p);
 
-            for (Position position : info.attackedSquares()) {
+            for (Position position : info.getAttackedSquares()) {
                 underAttack.computeIfAbsent(position, k -> new HashSet<>()).add(p);
             }
 
-            for (Position position : info.protectedSquares()) {
+            for (Position position : info.getProtectedSquares()) {
                 protectedRightNow.computeIfAbsent(position, k -> new HashSet<>()).add(p);
             }
         }

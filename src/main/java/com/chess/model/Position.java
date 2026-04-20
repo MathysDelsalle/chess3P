@@ -1,4 +1,4 @@
-package model;
+package com.chess.model;
 import java.util.Objects;
 
 public class Position {

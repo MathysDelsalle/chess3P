@@ -1,4 +1,4 @@
-package model;
+package com.chess.model;
 
 //enumération des direction et méthode d'inversion
 public enum Direction {

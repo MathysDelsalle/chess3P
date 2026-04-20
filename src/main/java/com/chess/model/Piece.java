@@ -1,9 +1,9 @@
-package model;
+package com.chess.model;
 
 import java.util.Map;
 import java.util.Objects;
 
-import model.strategy.MovementStrategy;
+import com.chess.model.strategy.MovementStrategy;
 
 public class Piece {
 

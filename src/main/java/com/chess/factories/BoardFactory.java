@@ -1,19 +1,14 @@
-package factories;
+package com.chess.factories;
 
 import java.util.Map;
 
-import model.*;
+import com.chess.model.*;
 
 public class BoardFactory {
 
-    
-    
     //méthode pour tout créer
-    public static Board createInitialBoard(){
+    public static Board createInitialBoard(People p, People b1, People b2){
         Board board = new Board();
-        Player p = new Player("Joueur 1");
-        Bot b1 = new Bot(1);
-        Bot b2 = new Bot(2);
 
         createPositions(board);
 
@@ -222,7 +217,7 @@ public class BoardFactory {
 
 
     //crée et place les pieces pour chaque joueur a leur emplacement au début de la partie
-    public static void placeInitialPieces(Board board, Map<Integer, Position> positions, Player p, Bot b1, Bot b2){
+    public static void placeInitialPieces(Board board, Map<Integer, Position> positions, People p, People b1, People b2){
         int i=1;
         //blue player ( bot1 )
         board.setPiece(board.findPosition(positions, 2, 1, i), PieceFactory.createPiece(PieceType.Rook, b1, Color.blue,PieceFactory.getStrategies(),2));

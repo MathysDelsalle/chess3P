@@ -1,14 +1,15 @@
-package model.strategy;
+package com.chess.model.strategy;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import model.Board;
-import model.Move;
-import model.Piece;
-import model.Position;
+import com.chess.model.Board;
+import com.chess.model.Move;
+import com.chess.model.Piece;
+import com.chess.model.Position;
+import com.chess.model.AttackInfo;
 
 public class QueenStrategy implements MovementStrategy {
 
@@ -26,20 +27,20 @@ public class QueenStrategy implements MovementStrategy {
     }
 
     @Override
-    public MovementStrategy.AttackInfo getAttackedAndProtectedSquares(Position from, Board board, Piece piece) {
+    public AttackInfo getAttackedAndProtectedSquares(Position from, Board board, Piece piece) {
         Set<Position> attackedSquares = new LinkedHashSet<>();
         Set<Position> protectedSquares = new LinkedHashSet<>();
 
-        MovementStrategy.AttackInfo rookInfo = rookStrategy.getAttackedAndProtectedSquares(from, board, piece);
-        MovementStrategy.AttackInfo bishopInfo = bishopStrategy.getAttackedAndProtectedSquares(from, board, piece);
+        AttackInfo rookInfo = rookStrategy.getAttackedAndProtectedSquares(from, board, piece);
+        AttackInfo bishopInfo = bishopStrategy.getAttackedAndProtectedSquares(from, board, piece);
 
-        attackedSquares.addAll(rookInfo.attackedSquares());
-        attackedSquares.addAll(bishopInfo.attackedSquares());
+        attackedSquares.addAll(rookInfo.getAttackedSquares());
+        attackedSquares.addAll(bishopInfo.getAttackedSquares());
 
-        protectedSquares.addAll(rookInfo.protectedSquares());
-        protectedSquares.addAll(bishopInfo.protectedSquares());
+        protectedSquares.addAll(rookInfo.getProtectedSquares());
+        protectedSquares.addAll(bishopInfo.getProtectedSquares());
 
-        return new MovementStrategy.AttackInfo(new ArrayList<>(attackedSquares), new ArrayList<>(protectedSquares)
+        return new AttackInfo(new ArrayList<>(attackedSquares), new ArrayList<>(protectedSquares)
         );
     }
 }

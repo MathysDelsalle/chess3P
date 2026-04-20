@@ -1,4 +1,4 @@
-package model;
+package com.chess.model;
 
 public enum Color {
     white,

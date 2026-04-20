@@ -1,15 +1,16 @@
-package model.strategy;
+package com.chess.model.strategy;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import model.Board;
-import model.Direction;
-import model.Move;
-import model.Piece;
-import model.Position;
+import com.chess.model.Board;
+import com.chess.model.Direction;
+import com.chess.model.Move;
+import com.chess.model.Piece;
+import com.chess.model.Position;
+import com.chess.model.AttackInfo;
 
 public class KnightStrategy implements MovementStrategy {
 
@@ -318,7 +319,7 @@ public class KnightStrategy implements MovementStrategy {
     }
 
     @Override
-    public MovementStrategy.AttackInfo getAttackedAndProtectedSquares(Position from, Board board, Piece piece) {
+    public AttackInfo getAttackedAndProtectedSquares(Position from, Board board, Piece piece) {
 
         List<Position> attackedSquares = new ArrayList<>();
         List<Position> protectedSquares = new ArrayList<>();
@@ -338,6 +339,6 @@ public class KnightStrategy implements MovementStrategy {
             addStandardKnightAttacks(from, board, attackedSquares);
         }
 
-        return new MovementStrategy.AttackInfo(attackedSquares, protectedSquares);
+        return new AttackInfo(attackedSquares, protectedSquares);
     }
 }
