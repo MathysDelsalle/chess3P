@@ -1,3 +1,4 @@
+com\chess\model\Couleur.class
 com\chess\view\ui\MainApp.class
 com\chess\Main.class
 com\chess\model\Board.class
@@ -9,7 +10,6 @@ com\chess\model\People.class
 com\chess\model\PieceType.class
 com\chess\model\strategy\KnightStrategy$1.class
 com\chess\view\ui\BoardView.class
-com\chess\model\Color.class
 com\chess\model\strategy\KnightStrategy.class
 com\chess\model\strategy\RookStrategy.class
 com\chess\model\Bot.class

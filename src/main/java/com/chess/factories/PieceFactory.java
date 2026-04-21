@@ -2,7 +2,7 @@ package com.chess.factories;
 
 import java.util.Map;
 
-import com.chess.model.Color;
+import com.chess.model.Couleur;
 import com.chess.model.People;
 import com.chess.model.Piece;
 import com.chess.model.PieceType;
@@ -22,7 +22,7 @@ public class PieceFactory {
     );
 
 
-    public static Piece createPiece(PieceType type, People owner, Color color,Map<PieceType, MovementStrategy> strategies,int tier) {
+    public static Piece createPiece(PieceType type, People owner, Couleur color,Map<PieceType, MovementStrategy> strategies,int tier) {
         Piece P = new Piece(type, owner,color,tier);
         P.setMovementStrategy(type, strategies);
         return P;

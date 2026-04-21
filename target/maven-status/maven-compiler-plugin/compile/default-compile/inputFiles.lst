@@ -4,12 +4,12 @@ C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\Main.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\PieceType.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\strategy\KingStrategy.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\Piece.java
+C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\Couleur.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\Move.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\view\ui\MainApp.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\Player.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\view\ConsoleView.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\Board.java
-C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\Color.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\engine\GameEngine.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\factories\BoardFactory.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\NextStep.java

@@ -7,6 +7,7 @@ import com.chess.model.Player;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
@@ -22,6 +23,7 @@ public class MainApp extends Application {
         BoardView boardView = new BoardView(board);
 
         Scene scene = new Scene(boardView, 1200, 800);
+        scene.setFill(Color.web("#00001b"));
 
         stage.setTitle("Jeu d'Échecs Yalta - JavaFX");
         stage.setScene(scene);

@@ -9,14 +9,14 @@ public class Piece {
 
     private PieceType type;
     private People owner;
-    private Color color;
+    private Couleur color;
     private MovementStrategy movementStrategy;
     private boolean hasMoved=false;
     private int StartTier;
     private final int id;
     private static int nextid=0;
 
-    public Piece(PieceType type, People owner, Color color, int tier) {
+    public Piece(PieceType type, People owner, Couleur color, int tier) {
         this.type = type;
         this.owner = owner;
         this.color = color;
@@ -33,7 +33,7 @@ public class Piece {
         return owner;
     }
 
-    public Color getColor(){
+    public Couleur getColor(){
         return color;
     }
 

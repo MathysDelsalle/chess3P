@@ -1,6 +1,6 @@
 package com.chess.model;
 
-public enum Color {
+public enum Couleur {
     white,
     red,
     blue
