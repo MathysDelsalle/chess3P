@@ -5,15 +5,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.chess.factories.PieceFactory;
 import com.chess.model.Board;
 import com.chess.model.Couleur;
 import com.chess.model.Move;
 import com.chess.model.Piece;
 import com.chess.model.PieceType;
 import com.chess.model.Position;
+import com.chess.model.engine.GameEngine;
 
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
@@ -25,14 +28,17 @@ import javafx.scene.image.ImageView;
 
 public class BoardView extends Pane {
     private Board board;
+    private GameEngine engine;
     static final double demiLargeur = 28; 
     static final double demiHauteur = 48;
     private List<Move> moves = null;
-    private Piece selectedPiece = null; 
+    private Piece selectedPiece = null;
+    private Position selectedPosition = null; 
 
 
-    public BoardView(Board board) {
+    public BoardView(Board board,GameEngine engine) {
         this.board = board;
+        this.engine = engine;
         sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.widthProperty().addListener((obsWidth, oldWidth, newWidth) -> drawBoard());
@@ -145,26 +151,32 @@ public class BoardView extends Pane {
                         
                         losange.setUserData(position);
                         losange.setOnMouseClicked(event -> {
-                            Position pos = (Position) losange.getUserData();
-                            System.out.println("Case cliquée : " + pos);
+                            Position destination = (Position) losange.getUserData();
+                            System.out.println("Case cliquée : " + destination);
 
-                            if (pos == null) {
-                                moves = null;
-                                selectedPiece = null;
-                                drawBoard();
-                                return;
-                            }
+                            Move chosenMove = findMoveTo(destination);
 
-                            if (board.getPiece(pos) == null && !isPossibleDestination(pos)) {
-                                moves = null;
-                                selectedPiece = null;
+                            if (chosenMove != null) {
+                                boolean success = engine.playMove(chosenMove);
+
+                                if (success) {
+                                    clearSelection();
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
+                                    }
+                                    else{
+                                        drawBoard();
+                                    }
+                                    
+                                }
+                            } else {
+                                clearSelection();
                                 drawBoard();
                             }
                         });
                         groupe.getChildren().add(losange);
 
                         if (position != null && board.getPiece(position) != null) {
-                        selectedPiece = board.getPiece(position);
                         ImageView pieceView = new ImageView(getImageForPiece(board.getPiece(position)));
                         pieceView.setFitWidth(40);
                         pieceView.setFitHeight(40);
@@ -173,23 +185,51 @@ public class BoardView extends Pane {
                         pieceView.getTransforms().add(new Rotate(-angleTotal, caseDepartX, caseDepartY));
                         pieceView.setUserData(position);
                         pieceView.setOnMouseClicked(event -> {
-                            Position pos = (Position) pieceView.getUserData();
-                            Piece piece = board.getPiece(pos);
+                            Position clickedPosition = (Position) pieceView.getUserData();
+                            Piece clickedPiece = board.getPiece(clickedPosition);
 
-                            selectedPiece = piece;
-                            moves = piece.getMovementStrategy().getPossibleMoves(pos, board, piece);
+                            if (clickedPiece == null) {
+                                return;
+                            }
 
-                            if (piece.getType() == PieceType.King) {
-                                List<Move> filteredMoves = new ArrayList<>();
+                            Move chosenMove = findMoveTo(clickedPosition);
 
-                                for (Move move : moves) {
-                                    if (!isAttackedByEnemy(move.getTo(), piece)) {
-                                        filteredMoves.add(move);
+                            if (selectedPiece != null && chosenMove != null) {
+                                boolean success = engine.playMove(chosenMove);
+
+                                if (success) {
+                                    clearSelection();
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
+                                    }
+                                    else{
+                                        drawBoard();
                                     }
                                 }
 
-                                moves = filteredMoves;
+                                event.consume();
+                                return;
                             }
+
+                            if (!clickedPiece.getOwner().equals(engine.getCurrentPlayer())) {
+                                event.consume();
+                                return;
+                            }
+
+                            selectedPosition = clickedPosition;
+                            selectedPiece = clickedPiece;
+
+                            List<Move> possibleMoves =
+                                    clickedPiece.getMovementStrategy().getPossibleMoves(clickedPosition, board, clickedPiece);
+
+                            List<Move> legalMoves = new ArrayList<>();
+                            for (Move move : possibleMoves) {
+                                if (engine.isMoveValid(move)) {
+                                    legalMoves.add(move);
+                                }
+                            }
+
+                            moves = legalMoves;
 
                             drawBoard();
                             event.consume();
@@ -247,19 +287,25 @@ public class BoardView extends Pane {
                         }
                         losange.setUserData(position);
                         losange.setOnMouseClicked(event -> {
-                            Position pos = (Position) losange.getUserData();
-                            System.out.println("Case cliquée : " + pos);
+                            Position destination = (Position) losange.getUserData();
+                            System.out.println("Case cliquée : " + destination);
 
-                            if (pos == null) {
-                                moves = null;
-                                selectedPiece = null;
-                                drawBoard();
-                                return;
-                            }
+                            Move chosenMove = findMoveTo(destination);
 
-                            if (board.getPiece(pos) == null && !isPossibleDestination(pos)) {
-                                moves = null;
-                                selectedPiece = null;
+                            if (chosenMove != null) {
+                                boolean success = engine.playMove(chosenMove);
+
+                                if (success) {
+                                    clearSelection();
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
+                                    }
+                                    else{
+                                        drawBoard();
+                                    }
+                                }
+                            } else {
+                                clearSelection();
                                 drawBoard();
                             }
                         });
@@ -274,23 +320,51 @@ public class BoardView extends Pane {
                             pieceView.getTransforms().add(new Rotate(-angleTotal, caseDepartX, caseDepartY));
                             pieceView.setUserData(position);
                             pieceView.setOnMouseClicked(event -> {
-                            Position pos = (Position) pieceView.getUserData();
-                            Piece piece = board.getPiece(pos);
+                            Position clickedPosition = (Position) pieceView.getUserData();
+                            Piece clickedPiece = board.getPiece(clickedPosition);
 
-                            selectedPiece = piece;
-                            moves = piece.getMovementStrategy().getPossibleMoves(pos, board, piece);
+                            if (clickedPiece == null) {
+                                return;
+                            }
 
-                            if (piece.getType() == PieceType.King) {
-                                List<Move> filteredMoves = new ArrayList<>();
+                            Move chosenMove = findMoveTo(clickedPosition);
 
-                                for (Move move : moves) {
-                                    if (!isAttackedByEnemy(move.getTo(), piece)) {
-                                        filteredMoves.add(move);
+                            if (selectedPiece != null && chosenMove != null) {
+                                boolean success = engine.playMove(chosenMove);
+
+                                if (success) {
+                                    clearSelection();
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
+                                    }
+                                    else{
+                                        drawBoard();
                                     }
                                 }
 
-                                moves = filteredMoves;
+                                event.consume();
+                                return;
                             }
+
+                            if (!clickedPiece.getOwner().equals(engine.getCurrentPlayer())) {
+                                event.consume();
+                                return;
+                            }
+
+                            selectedPosition = clickedPosition;
+                            selectedPiece = clickedPiece;
+
+                            List<Move> possibleMoves =
+                                    clickedPiece.getMovementStrategy().getPossibleMoves(clickedPosition, board, clickedPiece);
+
+                            List<Move> legalMoves = new ArrayList<>();
+                            for (Move move : possibleMoves) {
+                                if (engine.isMoveValid(move)) {
+                                    legalMoves.add(move);
+                                }
+                            }
+
+                            moves = legalMoves;
 
                             drawBoard();
                             event.consume();
@@ -346,19 +420,25 @@ public class BoardView extends Pane {
                         }
                         losange.setUserData(position);
                         losange.setOnMouseClicked(event -> {
-                            Position pos = (Position) losange.getUserData();
-                            System.out.println("Case cliquée : " + pos);
+                            Position destination = (Position) losange.getUserData();
+                            System.out.println("Case cliquée : " + destination);
 
-                            if (pos == null) {
-                                moves = null;
-                                selectedPiece = null;
-                                drawBoard();
-                                return;
-                            }
+                            Move chosenMove = findMoveTo(destination);
 
-                            if (board.getPiece(pos) == null && !isPossibleDestination(pos)) {
-                                moves = null;
-                                selectedPiece = null;
+                            if (chosenMove != null) {
+                                boolean success = engine.playMove(chosenMove);
+
+                                if (success) {
+                                    clearSelection();
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
+                                    }
+                                    else{
+                                        drawBoard();
+                                    }
+                                }
+                            } else {
+                                clearSelection();
                                 drawBoard();
                             }
                         });
@@ -373,27 +453,55 @@ public class BoardView extends Pane {
                             pieceView.getTransforms().add(new Rotate(-angleTotal, caseDepartX, caseDepartY));
                             pieceView.setUserData(position);
                             pieceView.setOnMouseClicked(event -> {
-                                Position pos = (Position) pieceView.getUserData();
-                                Piece piece = board.getPiece(pos);
+                            Position clickedPosition = (Position) pieceView.getUserData();
+                            Piece clickedPiece = board.getPiece(clickedPosition);
 
-                                selectedPiece = piece;
-                                moves = piece.getMovementStrategy().getPossibleMoves(pos, board, piece);
+                            if (clickedPiece == null) {
+                                return;
+                            }
 
-                                if (piece.getType() == PieceType.King) {
-                                    List<Move> filteredMoves = new ArrayList<>();
+                            Move chosenMove = findMoveTo(clickedPosition);
 
-                                    for (Move move : moves) {
-                                        if (!isAttackedByEnemy(move.getTo(), piece)) {
-                                            filteredMoves.add(move);
-                                        }
+                            if (selectedPiece != null && chosenMove != null) {
+                                boolean success = engine.playMove(chosenMove);
+
+                                if (success) {
+                                    clearSelection();
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
                                     }
-
-                                    moves = filteredMoves;
+                                    else{
+                                        drawBoard();
+                                    }
                                 }
 
-                                drawBoard();
+                                event.consume();
+                                return;
+                            }
+
+                            if (!clickedPiece.getOwner().equals(engine.getCurrentPlayer())) {
+                                event.consume();
+                                return;
+                            }
+
+                            selectedPosition = clickedPosition;
+                            selectedPiece = clickedPiece;
+
+                            List<Move> possibleMoves =
+                                    clickedPiece.getMovementStrategy().getPossibleMoves(clickedPosition, board, clickedPiece);
+
+                            List<Move> legalMoves = new ArrayList<>();
+                            for (Move move : possibleMoves) {
+                                if (engine.isMoveValid(move)) {
+                                    legalMoves.add(move);
+                                }
+                            }
+
+                            moves = legalMoves;
+
+                            drawBoard();
                             event.consume();
-                            });
+                        });
 
                             groupe.getChildren().add(pieceView);
                         }
@@ -446,19 +554,25 @@ public class BoardView extends Pane {
                         }
                         losange.setUserData(position);
                         losange.setOnMouseClicked(event -> {
-                            Position pos = (Position) losange.getUserData();
-                            System.out.println("Case cliquée : " + pos);
+                            Position destination = (Position) losange.getUserData();
+                            System.out.println("Case cliquée : " + destination);
 
-                            if (pos == null) {
-                                moves = null;
-                                selectedPiece = null;
-                                drawBoard();
-                                return;
-                            }
+                            Move chosenMove = findMoveTo(destination);
 
-                            if (board.getPiece(pos) == null && !isPossibleDestination(pos)) {
-                                moves = null;
-                                selectedPiece = null;
+                            if (chosenMove != null) {
+                                boolean success = engine.playMove(chosenMove);
+
+                                if (success) {
+                                    clearSelection();
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
+                                    }
+                                    else{
+                                        drawBoard();
+                                    }
+                                }
+                            } else {
+                                clearSelection();
                                 drawBoard();
                             }
                         });
@@ -472,28 +586,56 @@ public class BoardView extends Pane {
                             pieceView.setY(caseDepartY - 20);
                             pieceView.getTransforms().add(new Rotate(-angleTotal, caseDepartX, caseDepartY));
                             pieceView.setUserData(position);
-                            pieceView.setOnMouseClicked(event -> {
-                                Position pos = (Position) pieceView.getUserData();
-                                Piece piece = board.getPiece(pos);
+                           pieceView.setOnMouseClicked(event -> {
+                            Position clickedPosition = (Position) pieceView.getUserData();
+                            Piece clickedPiece = board.getPiece(clickedPosition);
 
-                                selectedPiece = piece;
-                                moves = piece.getMovementStrategy().getPossibleMoves(pos, board, piece);
+                            if (clickedPiece == null) {
+                                return;
+                            }
 
-                                if (piece.getType() == PieceType.King) {
-                                    List<Move> filteredMoves = new ArrayList<>();
+                            Move chosenMove = findMoveTo(clickedPosition);
 
-                                    for (Move move : moves) {
-                                        if (!isAttackedByEnemy(move.getTo(), piece)) {
-                                            filteredMoves.add(move);
-                                        }
+                            if (selectedPiece != null && chosenMove != null) {
+                                boolean success = engine.playMove(chosenMove);
+
+                                if (success) {
+                                    clearSelection();
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
                                     }
-
-                                    moves = filteredMoves;
+                                    else{
+                                        drawBoard();
+                                    }
                                 }
 
-                                drawBoard();
+                                event.consume();
+                                return;
+                            }
+
+                            if (!clickedPiece.getOwner().equals(engine.getCurrentPlayer())) {
+                                event.consume();
+                                return;
+                            }
+
+                            selectedPosition = clickedPosition;
+                            selectedPiece = clickedPiece;
+
+                            List<Move> possibleMoves =
+                                    clickedPiece.getMovementStrategy().getPossibleMoves(clickedPosition, board, clickedPiece);
+
+                            List<Move> legalMoves = new ArrayList<>();
+                            for (Move move : possibleMoves) {
+                                if (engine.isMoveValid(move)) {
+                                    legalMoves.add(move);
+                                }
+                            }
+
+                            moves = legalMoves;
+
+                            drawBoard();
                             event.consume();
-                            });
+                        });
 
                             groupe.getChildren().add(pieceView);
                         }
@@ -545,19 +687,25 @@ public class BoardView extends Pane {
                         }
                         losange.setUserData(position);
                         losange.setOnMouseClicked(event -> {
-                            Position pos = (Position) losange.getUserData();
-                            System.out.println("Case cliquée : " + pos);
+                            Position destination = (Position) losange.getUserData();
+                            System.out.println("Case cliquée : " + destination);
 
-                            if (pos == null) {
-                                moves = null;
-                                selectedPiece = null;
-                                drawBoard();
-                                return;
-                            }
+                            Move chosenMove = findMoveTo(destination);
 
-                            if (board.getPiece(pos) == null && !isPossibleDestination(pos)) {
-                                moves = null;
-                                selectedPiece = null;
+                            if (chosenMove != null) {
+                                boolean success = engine.playMove(chosenMove);
+
+                                if (success) {
+                                    clearSelection();
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
+                                    }
+                                    else{
+                                        drawBoard();
+                                    }
+                                }
+                            } else {
+                                clearSelection();
                                 drawBoard();
                             }
                         });
@@ -572,27 +720,55 @@ public class BoardView extends Pane {
                             pieceView.getTransforms().add(new Rotate(-angleTotal, caseDepartX, caseDepartY));
                             pieceView.setUserData(position);
                             pieceView.setOnMouseClicked(event -> {
-                                Position pos = (Position) pieceView.getUserData();
-                                Piece piece = board.getPiece(pos);
+                            Position clickedPosition = (Position) pieceView.getUserData();
+                            Piece clickedPiece = board.getPiece(clickedPosition);
 
-                                selectedPiece = piece;
-                                moves = piece.getMovementStrategy().getPossibleMoves(pos, board, piece);
+                            if (clickedPiece == null) {
+                                return;
+                            }
 
-                                if (piece.getType() == PieceType.King) {
-                                    List<Move> filteredMoves = new ArrayList<>();
+                            Move chosenMove = findMoveTo(clickedPosition);
 
-                                    for (Move move : moves) {
-                                        if (!isAttackedByEnemy(move.getTo(), piece)) {
-                                            filteredMoves.add(move);
-                                        }
+                            if (selectedPiece != null && chosenMove != null) {
+                                boolean success = engine.playMove(chosenMove);
+
+                                if (success) {
+                                    clearSelection();
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
                                     }
-
-                                    moves = filteredMoves;
+                                    else{
+                                        drawBoard();
+                                    }
                                 }
 
-                                drawBoard();
+                                event.consume();
+                                return;
+                            }
+
+                            if (!clickedPiece.getOwner().equals(engine.getCurrentPlayer())) {
+                                event.consume();
+                                return;
+                            }
+
+                            selectedPosition = clickedPosition;
+                            selectedPiece = clickedPiece;
+
+                            List<Move> possibleMoves =
+                                    clickedPiece.getMovementStrategy().getPossibleMoves(clickedPosition, board, clickedPiece);
+
+                            List<Move> legalMoves = new ArrayList<>();
+                            for (Move move : possibleMoves) {
+                                if (engine.isMoveValid(move)) {
+                                    legalMoves.add(move);
+                                }
+                            }
+
+                            moves = legalMoves;
+
+                            drawBoard();
                             event.consume();
-                            });
+                        });
 
                             groupe.getChildren().add(pieceView);
                         }
@@ -645,19 +821,25 @@ public class BoardView extends Pane {
                         }
                         losange.setUserData(position);
                         losange.setOnMouseClicked(event -> {
-                            Position pos = (Position) losange.getUserData();
-                            System.out.println("Case cliquée : " + pos);
+                            Position destination = (Position) losange.getUserData();
+                            System.out.println("Case cliquée : " + destination);
 
-                            if (pos == null) {
-                                moves = null;
-                                selectedPiece = null;
-                                drawBoard();
-                                return;
-                            }
+                            Move chosenMove = findMoveTo(destination);
 
-                            if (board.getPiece(pos) == null && !isPossibleDestination(pos)) {
-                                moves = null;
-                                selectedPiece = null;
+                            if (chosenMove != null) {
+                                boolean success = engine.playMove(chosenMove);
+
+                                if (success) {
+                                    clearSelection();
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
+                                    }
+                                    else{
+                                        drawBoard();
+                                    }
+                                }
+                            } else {
+                                clearSelection();
                                 drawBoard();
                             }
                         });
@@ -672,28 +854,55 @@ public class BoardView extends Pane {
                             pieceView.getTransforms().add(new Rotate(-angleTotal, caseDepartX, caseDepartY));
                             pieceView.setUserData(position);
                             pieceView.setOnMouseClicked(event -> {
-                                Position pos = (Position) pieceView.getUserData();
-                                Piece piece = board.getPiece(pos);
+                            Position clickedPosition = (Position) pieceView.getUserData();
+                            Piece clickedPiece = board.getPiece(clickedPosition);
 
-                                selectedPiece = piece;
-                                moves = piece.getMovementStrategy().getPossibleMoves(pos, board, piece);
+                            if (clickedPiece == null) {
+                                return;
+                            }
 
-                                if (piece.getType() == PieceType.King) {
-                                    List<Move> filteredMoves = new ArrayList<>();
+                            Move chosenMove = findMoveTo(clickedPosition);
 
-                                    for (Move move : moves) {
-                                        if (!isAttackedByEnemy(move.getTo(), piece)) {
-                                            filteredMoves.add(move);
-                                        }
+                            if (selectedPiece != null && chosenMove != null) {
+                                boolean success = engine.playMove(chosenMove);
+
+                                if (success) {
+                                    clearSelection();
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
                                     }
-
-                                    moves = filteredMoves;
+                                    else{
+                                        drawBoard();
+                                    }
                                 }
 
-                                drawBoard();
-                            event.consume();
-                            });
+                                event.consume();
+                                return;
+                            }
 
+                            if (!clickedPiece.getOwner().equals(engine.getCurrentPlayer())) {
+                                event.consume();
+                                return;
+                            }
+
+                            selectedPosition = clickedPosition;
+                            selectedPiece = clickedPiece;
+
+                            List<Move> possibleMoves =
+                                    clickedPiece.getMovementStrategy().getPossibleMoves(clickedPosition, board, clickedPiece);
+
+                            List<Move> legalMoves = new ArrayList<>();
+                            for (Move move : possibleMoves) {
+                                if (engine.isMoveValid(move)) {
+                                    legalMoves.add(move);
+                                }
+                            }
+
+                            moves = legalMoves;
+
+                            drawBoard();
+                            event.consume();
+                        });
                             groupe.getChildren().add(pieceView);
                         }
 
@@ -741,13 +950,99 @@ public class BoardView extends Pane {
         return false;
     }
 
-    for (Piece attacker : attackers) {
-        if (attacker != null && attacker.getOwner() != selectedPiece.getOwner()) {
+        for (Piece attacker : attackers) {
+            if (attacker != null && attacker.getOwner() != selectedPiece.getOwner()) {
             return true;
+            }
         }
+
+        return false;
     }
 
-    return false;
-}
+    public Move findMoveTo(Position destination) {
+        if (moves == null || destination == null) {
+            return null;
+        }
+
+        for (Move move : moves) {
+            if (move.getTo().equals(destination)) {
+                return move;
+            }
+        }
+
+        return null;
+    }
+
+    public void clearSelection() {
+        selectedPosition = null;
+        selectedPiece = null;
+        moves = null;
+    }
+
+    public void showPromotionPanel() {
+        Position pos = board.getPromotionPendingPosition();
+        Piece pawn = board.getPiece(pos);
+
+        if (pos == null || pawn == null) return;
+
+        Group panel = new Group();
+
+        double size = 55;
+        double spacing = 10;
+        double startX = getScene().getWidth() / 2 - 130;
+        double startY = getScene().getHeight() / 2 - 35;
+
+        javafx.scene.shape.Rectangle background =
+                new javafx.scene.shape.Rectangle(startX - 15, startY - 15, 290, 90);
+        background.setFill(Color.web("#222222"));
+        background.setStroke(Color.WHITE);
+        background.setStrokeWidth(2);
+
+        panel.getChildren().add(background);
+
+        PieceType[] choices = {
+                PieceType.Queen,
+                PieceType.Rook,
+                PieceType.Knight,
+                PieceType.Bishop
+        };
+
+        for (int i = 0; i < choices.length; i++) {
+            PieceType type = choices[i];
+
+            Piece previewPiece = PieceFactory.createPiece(type, pawn.getOwner(), pawn.getColor(),PieceFactory.getStrategies(), pawn.getStartTier());
+
+            ImageView img = new ImageView(getImageForPiece(previewPiece));
+            img.setFitWidth(size);
+            img.setFitHeight(size);
+            img.setX(startX + i * (size + spacing));
+            img.setY(startY);
+
+            img.setOnMouseClicked(e -> {
+                engine.promotePendingPawn(type);
+                drawBoard();
+            });
+            
+            panel.getChildren().add(img);
+        }
+
+        Scene scene = getScene();
+        if (scene == null) return;
+
+        double sceneWidth = scene.getWidth();
+        double sceneHeight = scene.getHeight();
+
+        double originX = sceneWidth / 2;
+        double originY = sceneHeight - (sceneHeight / 2);
+
+        Rotate rotation = new Rotate();
+        rotation.setAngle(-30);
+        rotation.setPivotX(originX);
+        rotation.setPivotY(originY);
+
+        panel.getTransforms().add(rotation);
+
+        this.getChildren().add(panel);
+    }
 
 }

@@ -2,7 +2,7 @@ package com.chess.model;
 public class Player implements People{
 
     private String name;
-    private static int nextid=-1;
+    private static int nextid=0;
     private int id;
 
     public Player(String name) {

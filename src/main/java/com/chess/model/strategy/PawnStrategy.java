@@ -54,7 +54,36 @@ public class PawnStrategy implements MovementStrategy{
             }
         }
 
+        //en passant
+        Position enPassantTarget = board.getEnPassantTarget();
 
+        if (enPassantTarget != null) {
+            for (Direction dir : PAWN_DIRECTIONS) {
+                Position to = board.getNeighborsDirection(from, dir.switchDir());
+                Direction moveDirection = dir.switchDir();
+
+                if (piece.getStartTier() == from.getTiers()) {
+                    to = board.getNeighborsDirection(from, dir);
+                    moveDirection = dir;
+                }
+
+                Position previous = board.getNeighborsDirection(from, normalDir);
+
+                if (piece.getStartTier() == from.getTiers()) {
+                    previous = board.getNeighborsDirection(from, normalDir.switchDir());
+                }
+
+                if (previous != null && from.getIsJunction() && previous.getIsJunction()) {
+                    to = board.getNeighborsDirection(from, dir.switchDir());
+                    moveDirection = dir.switchDir();
+                }
+
+                if (to != null && to.equals(enPassantTarget)) {
+                    moves.add(new Move(from, to, moveDirection, piece));
+                }
+            }
+        }
+        
         //ce code vérifie d'abord si la piece a bougée puis si elle n'a pas bougé vérifie qu'l n'y a pas de piece sur la case d'après
         //s'il n'y a pas de piece elle ajoute le mouvement et vérifie s'il n'y a pas de piece sur la case encore après 
         //s'il n'y a encore pas de piece elle ajoute le mouvement de deux case (coup spécial pion)

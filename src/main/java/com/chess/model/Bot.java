@@ -1,7 +1,7 @@
 package com.chess.model;
 public class Bot implements People {
     
-    private static int nextid=0;
+    private static int nextid=1;
     private int botId;
     private String name;
 

@@ -2,9 +2,9 @@ package com.chess.model.strategy;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.chess.model.*;
-import com.chess.model.AttackInfo;
 
 public class KingStrategy implements MovementStrategy{
  
@@ -74,12 +74,18 @@ public class KingStrategy implements MovementStrategy{
                             if(to.getColonne()==1){
                                 intermediateStep=board.getNeighborsDirection(from, dir);
                                 newKingPlace=board.getNeighborsDirection(intermediateStep, dir);
-                                moves.add(new Move(from, newKingPlace, dir, piece));
+                                //detection de l'attaque des cases entre le roi et la tour
+                                if (!isCastlingPathAttacked(from, intermediateStep, newKingPlace, board, piece)) {
+                                        moves.add(new Move(from, newKingPlace, dir, piece));
+                                }
                             }
                             else if(to.getColonne()==8){
                                 intermediateStep=board.getNeighborsDirection(from, dir);
                                 newKingPlace=board.getNeighborsDirection(intermediateStep, dir);
-                                moves.add(new Move(from, newKingPlace, dir, piece));
+                                //detection de l'attaque des cases entre le roi et la tour
+                                if (!isCastlingPathAttacked(from, intermediateStep, newKingPlace, board, piece)) {
+                                        moves.add(new Move(from, newKingPlace, dir, piece));
+                                    }
                             }
                         }
                         break;
@@ -137,6 +143,28 @@ public class KingStrategy implements MovementStrategy{
         }
 
         return new AttackInfo(attackedSquares, protectedSquares);
+    }
+
+    public boolean isCastlingPathAttacked(Position kingFrom, Position step1, Position step2, Board board, Piece king) {
+        return isAttackedByEnemy(kingFrom, board, king)
+            || isAttackedByEnemy(step1, board, king)
+            || isAttackedByEnemy(step2, board, king);
+    }
+
+    public boolean isAttackedByEnemy(Position position, Board board, Piece king) {
+        Set<Piece> attackers = board.getUnderAttack().get(position);
+
+        if (attackers == null) {
+            return false;
+        }
+
+        for (Piece attacker : attackers) {
+            if (attacker != null && !attacker.getOwner().equals(king.getOwner())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

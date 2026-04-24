@@ -10,7 +10,12 @@ public class Board {
     private Map<Position, Map<Direction,Position>> neighbors = new HashMap<>();
     private Map<Integer, Position> positions = new HashMap<>();
     private Map<Position, Set<Piece>> underAttack = new HashMap<>();
-    private Map<Position, Set<Piece>> protectedRightNow = new HashMap<>();  
+    private Map<Position, Set<Piece>> protectedRightNow = new HashMap<>();
+    private Position enPassantTarget = null;
+    private People enPassantAllowedPlayer;
+    private Position capturedPawnPos;
+    private Position promotionPendingPosition = null;
+  
 
     //ajoute les cases dans neighbor et diag afin de dire ensuite les connexions entre elles
     public void addPosition(Position position) {
@@ -111,6 +116,48 @@ public class Board {
         return false;
     }
 
+    //pawn en passant
+    public Position getEnPassantTarget() {
+        return enPassantTarget;
+    }
+
+    public void setEnPassantTarget(Position enPassantTarget) {
+        this.enPassantTarget = enPassantTarget;
+    }
+
+    public People getEnPassantAllowedPlayer() {
+        return enPassantAllowedPlayer;
+    }
+
+    public void setEnPassantAllowedPlayer(People enPassantAllowedPlayer) {
+        this.enPassantAllowedPlayer = enPassantAllowedPlayer;
+    }
+
+    public Position getEnPassantCapturedPawnPosition() {
+        return capturedPawnPos;
+    }
+
+    public void setEnPassantCapturedPawnPosition(Position capturedPawnPos) {
+        this.capturedPawnPos = capturedPawnPos;
+    }
+
+    //promotion
+
+    public Position getPromotionPendingPosition() {
+        return promotionPendingPosition;
+    }
+
+    public void clearPromotion() {
+        promotionPendingPosition = null;
+    }
+
+    public void setPromotionPendingPosition(Position promotionPendingPosition) {
+        this.promotionPendingPosition = promotionPendingPosition;
+    }
+    
+    public boolean hasPendingPromotion() {
+        return promotionPendingPosition != null;
+    }
 }
 
 

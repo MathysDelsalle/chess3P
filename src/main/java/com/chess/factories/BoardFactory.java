@@ -256,6 +256,8 @@ public class BoardFactory {
         board.setPiece(board.findPosition(positions, 1, 2, i), PieceFactory.createPiece(PieceType.Pawn, p, Couleur.white,PieceFactory.getStrategies(),1));
         }
 
+
+
         /*DEBUG
          for(int tiers=1;tiers<4;tiers++){
             for(int ligne=1;ligne<5;ligne++){

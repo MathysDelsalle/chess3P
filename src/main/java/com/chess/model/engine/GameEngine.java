@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.chess.factories.PieceFactory;
 import com.chess.model.Board;
+import com.chess.model.Direction;
 import com.chess.model.Move;
 import com.chess.model.People;
 import com.chess.model.Piece;
@@ -21,7 +23,7 @@ public class GameEngine {
     public GameEngine(Board board,List<People> players){
         this.board = board;
         this.players = new ArrayList<>(players);
-        this.currentPlayerId = players.get(0).getId();
+        this.currentPlayerId = 0;
     }
 
     public Board getBoard() {
@@ -29,6 +31,7 @@ public class GameEngine {
     }
 
     public int getCurrentPlayerId() {
+        System.out.println("Tour de : " + players.get(currentPlayerId));
         return currentPlayerId;
     }
 
@@ -40,7 +43,7 @@ public class GameEngine {
         return players;
     }
 
-    public void nextTurn() {
+   public void nextTurn() {
         currentPlayerId = (currentPlayerId + 1) % players.size();
     }
 
@@ -48,13 +51,10 @@ public class GameEngine {
         Piece piece = board.getPiece(move.getFrom());
         
         if (piece == null) return false;
-        if (!piece.getOwner().equals(getCurrentPlayer())) return false;
-
         List<Move> possibleMoves = piece.getMovementStrategy().getPossibleMoves(move.getFrom(), board, piece);
 
         if(!possibleMoves.contains(move)) return false;
 
-        // simulation
         Piece captured = board.getPiece(move.getTo());
 
         board.setPiece(move.getTo(), piece);
@@ -64,7 +64,6 @@ public class GameEngine {
 
         boolean kingInCheck = isKingInCheck(piece.getOwner());
 
-        // rollback
         board.setPiece(move.getFrom(), piece);
         board.setPiece(move.getTo(), captured);
 
@@ -144,14 +143,101 @@ public class GameEngine {
     public void applyMove(Move move) {
         Piece piece = board.getPiece(move.getFrom());
 
+        if (piece == null) {
+            return;
+        }
+
+        People currentPlayer = piece.getOwner();
+
+        boolean castling = isCastlingMove(move);
+
+        boolean enPassant = false;
+        if (piece.getType() == PieceType.Pawn
+                && board.getEnPassantTarget() != null
+                && board.getEnPassantAllowedPlayer() != null
+                && board.getEnPassantAllowedPlayer().equals(currentPlayer)) {
+
+            if (move.getTo().equals(board.getEnPassantTarget())
+                    && board.getPiece(move.getTo()) == null) {
+                enPassant = true;
+            }
+        }
+
+        Position rookFrom = null;
+        Position rookTo = null;
+
+        if (castling) {
+            rookFrom = findCastlingRookPosition(move, piece);
+            rookTo = board.getNeighborsDirection(move.getFrom(), move.getDirection());
+        }
+
+        boolean mustClearEnPassant =
+                board.getEnPassantAllowedPlayer() != null
+                && board.getEnPassantAllowedPlayer().equals(currentPlayer);
+
         board.setPiece(move.getTo(), piece);
         board.setPiece(move.getFrom(), null);
-
         piece.setHasMoved(true);
+
+        if (piece.getType() == PieceType.Pawn && isPromotionSquare(move.getTo(), piece)) {
+            board.setPromotionPendingPosition(move.getTo());
+        }
+
+        if (castling && rookFrom != null && rookTo != null) {
+            Piece rook = board.getPiece(rookFrom);
+
+            board.setPiece(rookTo, rook);
+            board.setPiece(rookFrom, null);
+
+            if (rook != null) {
+                rook.setHasMoved(true);
+            }
+        }
+
+        if (enPassant) {
+            Position capturedPawnPos = board.getEnPassantCapturedPawnPosition();
+            if (capturedPawnPos != null) {
+                board.setPiece(capturedPawnPos, null);
+            }
+        }
+
+        if (mustClearEnPassant) {
+            board.setEnPassantTarget(null);
+            board.setEnPassantCapturedPawnPosition(null);
+            board.setEnPassantAllowedPlayer(null);
+        }
+
+        if (piece.getType() == PieceType.Pawn) {
+            Position from = move.getFrom();
+            Position middle = board.getNeighborsDirection(from, move.getDirection());
+
+            if (middle != null) {
+                Position doubleStep = board.getNeighborsDirection(middle, move.getDirection());
+
+                if (doubleStep != null && doubleStep.equals(move.getTo())) {
+                    board.setEnPassantTarget(middle);
+                    board.setEnPassantCapturedPawnPosition(move.getTo());
+
+                    //autorisation pour le joueur car sinon méthode d'oubli au prochaon déplacement de pièce pas adapté a trois joueur
+                    int currentIndex = players.indexOf(currentPlayer);
+                    int allowedIndex = (currentIndex + 2) % players.size();
+                    board.setEnPassantAllowedPlayer(players.get(allowedIndex));
+                }
+            }
+        }
     }
 
     public boolean playMove(Move move){
         if(gameOver){
+            return false;
+        }
+
+        Piece piece = board.getPiece(move.getFrom());
+        if (piece == null) {
+            return false;
+        }
+
+        if (!piece.getOwner().equals(getCurrentPlayer())) {
             return false;
         }
 
@@ -164,7 +250,6 @@ public class GameEngine {
         
         People playing = getCurrentPlayer();
 
-        //en cas de pat
         People eliminatedPlayer = null;
 
         for (People player : players) {
@@ -181,6 +266,7 @@ public class GameEngine {
         if (eliminatedPlayer != null) {
             players.remove(eliminatedPlayer);
         }
+
         nextTurn();
         return true;
     }
@@ -192,4 +278,76 @@ public class GameEngine {
     public People getWinner() {
         return winner;
     }
+
+    //detection du roque :
+
+    public boolean isCastlingMove(Move move) {
+        Piece piece = board.getPiece(move.getFrom());
+
+        if (piece == null || piece.getType() != PieceType.King) {
+            return false;
+        }
+
+        Position firstStep = board.getNeighborsDirection(move.getFrom(), move.getDirection());
+        if (firstStep == null) return false;
+
+        Position secondStep = board.getNeighborsDirection(firstStep, move.getDirection());
+        if (secondStep == null) return false;
+
+        return secondStep.equals(move.getTo());
+    }
+
+    public Position findCastlingRookPosition(Move move, Piece king) {
+        Direction dir = move.getDirection();
+
+        Position current = board.getNeighborsDirection(move.getFrom(), dir);
+
+        while (current != null) {
+            Piece piece = board.getPiece(current);
+
+            if (piece != null) {
+                if (piece.getType() == PieceType.Rook
+                        && piece.getOwner().equals(king.getOwner())) {
+                    return current;
+                }
+
+                return null;
+            }
+
+            current = board.getNeighborsDirection(current, dir);
+        }
+
+        return null;
+    }
+
+    //promotion 
+
+    public boolean isPromotionSquare(Position position, Piece pawn) {
+        Direction normalDir = Direction.UP;
+
+        Position next;
+
+        if (pawn.getStartTier() == position.getTiers()) {
+            next = board.getNeighborsDirection(position, normalDir);
+        } else {
+            next = board.getNeighborsDirection(position, normalDir.switchDir());
+        }
+
+        return next == null;
+    }
+
+    public void promotePendingPawn(PieceType newType) {
+        if (board.getPromotionPendingPosition()==null) return;
+
+        Piece pawn = board.getPiece(board.getPromotionPendingPosition());
+        if (pawn == null || pawn.getType() != PieceType.Pawn) return;
+
+        Piece promoted = PieceFactory.createPiece(newType, pawn.getOwner(), pawn.getColor(), PieceFactory.getStrategies(), pawn.getStartTier());
+        promoted.setHasMoved(true);
+
+        board.setPiece(board.getPromotionPendingPosition(), promoted);
+        board.setPromotionPendingPosition(null);
+    }
+
+
 }

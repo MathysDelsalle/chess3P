@@ -29,7 +29,7 @@ public class Main {
 
         GameEngine engine = new GameEngine(board,players);
   
-
+        System.out.println(engine.getCurrentPlayerId());
         ConsoleView consoleView = new ConsoleView();
 
         consoleView.diplayCreationReussie();
