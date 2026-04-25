@@ -39,7 +39,7 @@ public class MainApp extends Application {
             System.out.println(person);
         }
 
-        Scene scene = new Scene(boardView, 1200, 800);
+        Scene scene = new Scene(boardView, 1200, 900);
         scene.setFill(Color.web("#222222"));
 
         stage.setTitle("Jeu d'Échecs Yalta - JavaFX");

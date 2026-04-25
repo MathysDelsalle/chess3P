@@ -33,14 +33,16 @@ public class BishopStrategy implements MovementStrategy {
             List<NextStep> startSteps = getStartStepsFromCenter(from, board);
 
             for (NextStep step : startSteps) {
-                exploreDirection(from, from, step.getPosition(), step.getDirection(), board, piece, moves, new HashSet<>());
+                exploreDirection(from, from, step.getPosition(), step.getDirection(),
+                        board, piece, moves, new HashSet<>());
             }
         } else {
             for (Direction startDirection : BISHOP_DIRECTIONS) {
-                Position first = board.getNeighborsDirection(from, startDirection);
+                List<NextStep> firstSteps = getNextSteps(from, from, startDirection, board);
 
-                if (first != null) {
-                    exploreDirection(from, from, first, startDirection, board, piece, moves, new HashSet<>());
+                for (NextStep step : firstSteps) {
+                    exploreDirection(from, from, step.getPosition(), step.getDirection(),
+                            board, piece, moves, new HashSet<>());
                 }
             }
         }
@@ -74,29 +76,42 @@ public class BishopStrategy implements MovementStrategy {
         }
     }
 
-   public List<NextStep> getNextSteps(Position previous, Position current, Direction direction, Board board) {
-        List<NextStep> nextSteps = new ArrayList<>();
+    public List<NextStep> getJunctionSteps(Position previous, Position current, Direction direction, Board board) {
+        List<NextStep> steps = new ArrayList<>();
 
-        // Cas centre : si on est sur une case centre,
-        // on teste d'abord les embranchements spéciaux
+        if (!isCenter(current) && current.getIsJunction()) {
+            Position next = board.getNeighborsDirection(current, direction);
+
+            if (next != null && next.getTiers() != current.getTiers()) {
+                Direction newDirection = direction.switchDir();
+                steps.add(new NextStep(next, newDirection));
+            }
+        }
+
+        return steps;
+    }
+
+    public List<NextStep> getNextSteps(Position previous, Position current, Direction direction, Board board) {
         if (isCenter(current)) {
             List<NextStep> centerSteps = getCenterSteps(previous, current, direction, board);
             if (!centerSteps.isEmpty()) {
                 return centerSteps;
             }
-            
         }
 
-        // Cas normal
+        if (current.getIsJunction() && !isCenter(current)) {
+            List<NextStep> junctionSteps = getJunctionSteps(previous, current, direction, board);
+            if (!junctionSteps.isEmpty()) {
+                return junctionSteps;
+            }
+        }
+
+        List<NextStep> nextSteps = new ArrayList<>();
+        //cas normal
         Position next = board.getNeighborsDirection(current, direction);
 
         if (next != null) {
-            Direction nextDirection = direction;
-            if (current.getIsJunction() && next.getIsJunction()) {
-                nextDirection = direction.switchDir();
-            }
-
-            nextSteps.add(new NextStep(next, nextDirection));
+            nextSteps.add(new NextStep(next, direction));
         }
 
         return nextSteps;
@@ -132,30 +147,28 @@ public class BishopStrategy implements MovementStrategy {
                 }
 
                 return nextSteps;
-            }else{
-                Position next1 = board.findPosition(board.getPositions(), 2, 4, 4);
-                Position next2 = board.findPosition(board.getPositions(), 3, 4, 4);
+            }
+            //si on vient de 135 vers 144
+            else if(previous.getTiers() == 1 && previous.getLigne() == 3 && previous.getColonne() == 5) {
+
                 Position next3 = board.findPosition(board.getPositions(), 2, 4, 6);
-                Position next4 = board.findPosition(board.getPositions(), 1, 3, 3);
-                Position next5 = board.findPosition(board.getPositions(), 1, 3, 5);
 
-                if (next1 != null) {
-                    nextSteps.add(new NextStep(next1, Direction.DIAG_DOWN_LEFT));
-                }
-                if (next2 != null) {
-                    nextSteps.add(new NextStep(next2, Direction.DIAG_DOWN_LEFT));
-                }
+
                 if (next3 != null) {
-                    nextSteps.add(new NextStep(next1, Direction.DIAG_DOWN_RIGHT));
+                    nextSteps.add(new NextStep(next3, Direction.DIAG_DOWN_RIGHT));
                 }
-                if (next4 != null) {
-                    nextSteps.add(new NextStep(next2, Direction.DIAG_DOWN_LEFT));
-                }
-                if (next5 != null) {
-                    nextSteps.add(new NextStep(next1, Direction.DIAG_DOWN_RIGHT));
-                }
-                
+                return nextSteps; 
+            }
+            // si on vient de 246 vers 144
+            else if(previous.getTiers() == 2 && previous.getLigne() == 4 && previous.getColonne() == 6) {
 
+                Position next3 = board.findPosition(board.getPositions(), 1, 3, 5);
+
+
+                if (next3 != null) {
+                    nextSteps.add(new NextStep(next3, Direction.DIAG_DOWN_RIGHT));
+                }
+                return nextSteps; 
             }
         }
 
@@ -177,6 +190,26 @@ public class BishopStrategy implements MovementStrategy {
 
                 return nextSteps;
             }
+            //si on vient de 235
+            else if(previous.getTiers() == 2 && previous.getLigne() == 3 && previous.getColonne() == 5){
+                Position next3 = board.findPosition(board.getPositions(), 3, 4, 6);
+
+
+                if (next3 != null) {
+                    nextSteps.add(new NextStep(next3, Direction.DIAG_DOWN_RIGHT));
+                }
+                return nextSteps;
+            }
+            //si on vient de 346
+            else if(previous.getTiers() == 3 && previous.getLigne() == 4 && previous.getColonne() == 6){
+                Position next3 = board.findPosition(board.getPositions(), 2, 3, 5);
+
+
+                if (next3 != null) {
+                    nextSteps.add(new NextStep(next3, Direction.DIAG_DOWN_RIGHT));
+                }
+                return nextSteps;
+            }
         }
 
         // 3/1/1 -> 3/2/2 -> 3/3/3 -> 3/4/4
@@ -195,6 +228,26 @@ public class BishopStrategy implements MovementStrategy {
                     nextSteps.add(new NextStep(next2, Direction.DIAG_DOWN_LEFT));
                 }
 
+                return nextSteps;
+            }
+            //si on vient de 335
+            else if(previous.getTiers() == 3 && previous.getLigne() == 3 && previous.getColonne() == 5){
+                Position next3 = board.findPosition(board.getPositions(), 1, 4, 6);
+
+
+                if (next3 != null) {
+                    nextSteps.add(new NextStep(next3, Direction.DIAG_DOWN_RIGHT));
+                }
+                return nextSteps;
+            }
+            //si on vient de 146
+            else if(previous.getTiers() == 1 && previous.getLigne() == 4 && previous.getColonne() == 6){
+                Position next3 = board.findPosition(board.getPositions(), 3, 3, 5);
+
+
+                if (next3 != null) {
+                    nextSteps.add(new NextStep(next3, Direction.DIAG_DOWN_RIGHT));
+                }
                 return nextSteps;
             }
         }
@@ -218,6 +271,26 @@ public class BishopStrategy implements MovementStrategy {
 
                 return nextSteps;
             }
+            //si on vient de 134
+            else if(previous.getTiers() == 1 && previous.getLigne() == 3 && previous.getColonne() == 4){
+                Position next3 = board.findPosition(board.getPositions(), 3, 4, 3);
+
+
+                if (next3 != null) {
+                    nextSteps.add(new NextStep(next3, Direction.DIAG_DOWN_RIGHT));
+                }
+                return nextSteps;
+            }
+            //si on vient de 343
+            else if(previous.getTiers() == 3 && previous.getLigne() == 4 && previous.getColonne() == 3){
+                Position next3 = board.findPosition(board.getPositions(), 1, 3, 4);
+
+
+                if (next3 != null) {
+                    nextSteps.add(new NextStep(next3, Direction.DIAG_DOWN_LEFT));
+                }
+                return nextSteps;
+            }
         }
 
         // 2/1/8 -> 2/2/7 -> 2/3/6 -> 2/4/5
@@ -238,6 +311,26 @@ public class BishopStrategy implements MovementStrategy {
 
                 return nextSteps;
             }
+            //si on vient de 234
+            else if(previous.getTiers() == 2 && previous.getLigne() == 3 && previous.getColonne() == 4){
+                Position next3 = board.findPosition(board.getPositions(), 1, 4, 3);
+
+
+                if (next3 != null) {
+                    nextSteps.add(new NextStep(next3, Direction.DIAG_DOWN_RIGHT));
+                }
+                return nextSteps;
+            }
+            //si on vient de 143
+            else if(previous.getTiers() == 1 && previous.getLigne() == 4 && previous.getColonne() == 3){
+                Position next3 = board.findPosition(board.getPositions(), 2, 3, 4);
+
+
+                if (next3 != null) {
+                    nextSteps.add(new NextStep(next3, Direction.DIAG_DOWN_LEFT));
+                }
+                return nextSteps;
+            }
         }
 
         // 3/1/8 -> 3/2/7 -> 3/3/6 -> 3/4/5
@@ -256,6 +349,26 @@ public class BishopStrategy implements MovementStrategy {
                     nextSteps.add(new NextStep(next2, Direction.DIAG_DOWN_RIGHT));
                 }
 
+                return nextSteps;
+            }
+            //si on vient de 334
+            else if(previous.getTiers() == 3 && previous.getLigne() == 3 && previous.getColonne() == 4){
+                Position next3 = board.findPosition(board.getPositions(), 2, 4, 3);
+
+
+                if (next3 != null) {
+                    nextSteps.add(new NextStep(next3, Direction.DIAG_DOWN_RIGHT));
+                }
+                return nextSteps;
+            }
+            //si on vient de 243
+            else if(previous.getTiers() == 2 && previous.getLigne() == 4 && previous.getColonne() == 3){
+                Position next3 = board.findPosition(board.getPositions(), 3, 3, 4);
+
+
+                if (next3 != null) {
+                    nextSteps.add(new NextStep(next3, Direction.DIAG_DOWN_LEFT));
+                }
                 return nextSteps;
             }
         }
@@ -337,7 +450,7 @@ public class BishopStrategy implements MovementStrategy {
                 //144
                 addStepIfExists(steps,board.findPosition(board.getPositions(), tier-2, ligne, colonne),Direction.DIAG_DOWN_LEFT);
                 //244
-                addStepIfExists(steps,board.findPosition(board.getPositions(), tier+1, ligne, colonne),Direction.DIAG_DOWN_LEFT);
+                addStepIfExists(steps,board.findPosition(board.getPositions(), tier-1, ligne, colonne),Direction.DIAG_DOWN_LEFT);
             }else if(colonne==5) {
                 //243
                 addStepIfExists(steps,board.findPosition(board.getPositions(), tier-1, ligne, colonne-2),Direction.DIAG_DOWN_LEFT);
@@ -366,21 +479,24 @@ public class BishopStrategy implements MovementStrategy {
             List<NextStep> startSteps = getStartStepsFromCenter(from, board);
 
             for (NextStep step : startSteps) {
-                exploreAttackDirection(from, from, step.getPosition(), step.getDirection(), board, 
-                    attackedSquares, protectedSquares, new HashSet<>(), false);
+                exploreAttackDirection(from, from, step.getPosition(), step.getDirection(),
+                        board, attackedSquares, protectedSquares, new HashSet<>(), false);
             }
         } else {
             for (Direction startDirection : BISHOP_DIRECTIONS) {
-                Position first = board.getNeighborsDirection(from, startDirection);
+                List<NextStep> firstSteps = getNextSteps(from, from, startDirection, board);
 
-                if (first != null) {
-                    exploreAttackDirection(from, from, first, startDirection, board, 
-                        attackedSquares, protectedSquares, new HashSet<>(), false);
+                for (NextStep step : firstSteps) {
+                    exploreAttackDirection(from, from, step.getPosition(), step.getDirection(),
+                            board, attackedSquares, protectedSquares, new HashSet<>(), false);
                 }
             }
         }
 
-        return new AttackInfo(new ArrayList<>(attackedSquares), new ArrayList<>(protectedSquares));
+        return new AttackInfo(
+                new ArrayList<>(attackedSquares),
+                new ArrayList<>(protectedSquares)
+        );
     }
 
     public void exploreAttackDirection(Position from, Position previous, Position current, Direction currentDirection, Board board, 

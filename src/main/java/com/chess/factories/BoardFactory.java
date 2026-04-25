@@ -221,7 +221,7 @@ public class BoardFactory {
         int i=1;
         //blue player ( bot1 )
         board.setPiece(board.findPosition(positions, 2, 1, i), PieceFactory.createPiece(PieceType.Rook, b1, Couleur.blue,PieceFactory.getStrategies(),2));
-        board.setPiece(board.findPosition(positions, 2, 1, i+1), PieceFactory.createPiece(PieceType.Knight, b1, Couleur.blue,PieceFactory.getStrategies(),2));
+        board.setPiece(board.findPosition(positions, 2, 4, 1), PieceFactory.createPiece(PieceType.Knight, b1, Couleur.blue,PieceFactory.getStrategies(),2));
         board.setPiece(board.findPosition(positions, 2, 1, i+2), PieceFactory.createPiece(PieceType.Bishop, b1, Couleur.blue,PieceFactory.getStrategies(),2));
         board.setPiece(board.findPosition(positions, 2, 1, i+3), PieceFactory.createPiece(PieceType.Queen, b1, Couleur.blue,PieceFactory.getStrategies(),2));
         board.setPiece(board.findPosition(positions, 2, 1, i+4), PieceFactory.createPiece(PieceType.King, b1, Couleur.blue,PieceFactory.getStrategies(),2));
@@ -232,7 +232,7 @@ public class BoardFactory {
         //red player ( bot2 )
         board.setPiece(board.findPosition(positions, 3, 1, i), PieceFactory.createPiece(PieceType.Rook, b2, Couleur.red,PieceFactory.getStrategies(),3));
         board.setPiece(board.findPosition(positions, 3, 1, i+1), PieceFactory.createPiece(PieceType.Knight, b2, Couleur.red,PieceFactory.getStrategies(),3));
-        board.setPiece(board.findPosition(positions, 3, 1, i+2), PieceFactory.createPiece(PieceType.Bishop, b2, Couleur.red,PieceFactory.getStrategies(),3));
+        board.setPiece(board.findPosition(positions, 3, 4, 8), PieceFactory.createPiece(PieceType.Bishop, b2, Couleur.red,PieceFactory.getStrategies(),3));
         board.setPiece(board.findPosition(positions, 3, 1, i+3), PieceFactory.createPiece(PieceType.Queen, b2, Couleur.red,PieceFactory.getStrategies(),3));
         board.setPiece(board.findPosition(positions, 3, 1, i+4), PieceFactory.createPiece(PieceType.King, b2, Couleur.red,PieceFactory.getStrategies(),3));
         board.setPiece(board.findPosition(positions, 3, 1, i+5), PieceFactory.createPiece(PieceType.Bishop, b2, Couleur.red,PieceFactory.getStrategies(),3));

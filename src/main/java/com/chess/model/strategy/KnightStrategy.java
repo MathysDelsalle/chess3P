@@ -41,7 +41,7 @@ public class KnightStrategy implements MovementStrategy {
             if (afterTwo != null) {
                 for (Direction turnDir : getPerpendicularDirections(firstDir)) {
                     Position destination = moveStepsKnight(board, afterTwo, turnDir, 1);
-                    if (isValidKnightDestination(from, afterTwo, destination)) {
+                    if (isValidKnightDestination(from, afterTwo, destination, board)) {
                         addMoveIfValid(uniqueMoves, from, destination, firstDir, board, piece);
                     }
                 }
@@ -51,7 +51,7 @@ public class KnightStrategy implements MovementStrategy {
             if (afterOne != null) {
                 for (Direction turnDir : getPerpendicularDirections(firstDir)) {
                     Position destination = moveStepsKnight(board, afterOne, turnDir, 2);
-                    if (isValidKnightDestination(from, afterOne, destination)) {
+                    if (isValidKnightDestination(from, afterOne, destination, board)) {
                         addMoveIfValid(uniqueMoves, from, destination, firstDir, board, piece);
                     }
                 }
@@ -169,7 +169,7 @@ public class KnightStrategy implements MovementStrategy {
         return current;
     }
 
-    public boolean isValidKnightDestination(Position from, Position intermediate, Position destination) {
+    public boolean isValidKnightDestination(Position from, Position intermediate, Position destination, Board board) {
         if (destination == null) {
             return false;
         }
@@ -180,6 +180,14 @@ public class KnightStrategy implements MovementStrategy {
 
         if (intermediate != null && destination.equals(intermediate)) {
             return false;
+        }
+
+        // interdit les cases directement voisines
+        for (Direction d : Direction.values()) {
+            if (board.getNeighborsDirection(from, d) != null 
+                    && board.getNeighborsDirection(from, d).equals(destination)) {
+                return false;
+            }
         }
 
         return true;
@@ -217,7 +225,9 @@ public class KnightStrategy implements MovementStrategy {
         if (afterTwo != null) {
             for (Direction turnDir : getPerpendicularDirections(firstDir)) {
                 Position destination = moveStepsKnight(board, afterTwo, turnDir, 1);
-                addIfExists(attackedSquares, destination);
+                if (isValidKnightDestination(from, afterTwo, destination, board)) {
+                    addIfExists(attackedSquares, destination);
+                }
             }
         }
 
@@ -225,6 +235,9 @@ public class KnightStrategy implements MovementStrategy {
         if (afterOne != null) {
             for (Direction turnDir : getPerpendicularDirections(firstDir)) {
                 Position destination = moveStepsKnight(board, afterOne, turnDir, 2);
+                if (isValidKnightDestination(from, afterTwo, destination, board)) {
+                    addIfExists(attackedSquares, destination);
+                }
                 addIfExists(attackedSquares, destination);
             }
         }

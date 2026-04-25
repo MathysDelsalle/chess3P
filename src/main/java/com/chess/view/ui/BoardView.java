@@ -14,9 +14,14 @@ import com.chess.model.PieceType;
 import com.chess.model.Position;
 import com.chess.model.engine.GameEngine;
 
+import javafx.scene.text.Text;
+import javafx.scene.control.Label;
+import javafx.animation.Timeline;
+import javafx.animation.KeyFrame;
+import javafx.util.Duration;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
@@ -33,12 +38,33 @@ public class BoardView extends Pane {
     static final double demiHauteur = 48;
     private List<Move> moves = null;
     private Piece selectedPiece = null;
-    private Position selectedPosition = null; 
+    private Position selectedPosition = null;
+    private Label statusLabel;
+    private Label timerLabel;
+    private long startTime;
+    private Timeline timer;
+    private boolean botTurnInProgress = false; 
+    private boolean debugPositions = true;
 
 
     public BoardView(Board board,GameEngine engine) {
         this.board = board;
         this.engine = engine;
+        startTime = System.currentTimeMillis();
+
+        statusLabel = new Label();
+        statusLabel.setTextFill(Color.web("#353535"));
+        statusLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+
+        timerLabel = new Label();
+        timerLabel.setTextFill(Color.web("#353535"));
+        timerLabel.setStyle("-fx-font-size: 18px;");
+
+        timer = new Timeline(
+            new KeyFrame(Duration.seconds(1), e -> updateUiInfo())
+        );
+        timer.setCycleCount(Timeline.INDEFINITE);
+        timer.play();
         sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.widthProperty().addListener((obsWidth, oldWidth, newWidth) -> drawBoard());
@@ -66,6 +92,16 @@ public class BoardView extends Pane {
         
         this.getTransforms().clear();
         this.getChildren().clear();
+
+        updateUiInfo();
+
+        statusLabel.setLayoutX(20);
+        statusLabel.setLayoutY(20);
+
+        timerLabel.setLayoutX(20);
+        timerLabel.setLayoutY(50);
+
+        this.getChildren().addAll(statusLabel, timerLabel);
 
         Map<Integer,Position> positions = board.getPositions();
 
@@ -137,7 +173,15 @@ public class BoardView extends Pane {
                             indexCaseBlanc++;
                         }
                         int idCase = (tiers - 1) * 32 + (ligne - 1) * 8 + (colonne - 1);
-                        Position position = positions.get(idCase);
+                        Position position = positions.get(idCase);                  
+
+                        Piece pieceOnCase = board.getPiece(position);
+
+                        if (pieceOnCase != null
+                                && pieceOnCase.getType() == PieceType.King
+                                && engine.isKingInCheck(pieceOnCase.getOwner())) {
+                            losange.setFill(Color.web("#fd7b7b"));
+                        }
                         
                         if(position!=null){
                             if (isPossibleDestination(position)) {
@@ -151,6 +195,10 @@ public class BoardView extends Pane {
                         
                         losange.setUserData(position);
                         losange.setOnMouseClicked(event -> {
+                            if (botTurnInProgress) {
+                                event.consume();
+                                return;
+                            }
                             Position destination = (Position) losange.getUserData();
                             System.out.println("Case cliquée : " + destination);
 
@@ -166,6 +214,10 @@ public class BoardView extends Pane {
                                     }
                                     else{
                                         drawBoard();
+                                    }
+
+                                    if (engine.isGameOver()) {
+                                        showVictoryMessage();
                                     }
                                     
                                 }
@@ -185,6 +237,10 @@ public class BoardView extends Pane {
                         pieceView.getTransforms().add(new Rotate(-angleTotal, caseDepartX, caseDepartY));
                         pieceView.setUserData(position);
                         pieceView.setOnMouseClicked(event -> {
+                            if (botTurnInProgress) {
+                                event.consume();
+                                return;
+                            }
                             Position clickedPosition = (Position) pieceView.getUserData();
                             Piece clickedPiece = board.getPiece(clickedPosition);
 
@@ -204,6 +260,9 @@ public class BoardView extends Pane {
                                     }
                                     else{
                                         drawBoard();
+                                    }
+                                    if (engine.isGameOver()) {
+                                        showVictoryMessage();
                                     }
                                 }
 
@@ -231,13 +290,16 @@ public class BoardView extends Pane {
 
                             moves = legalMoves;
 
+                            
+                            
+
                             drawBoard();
                             event.consume();
                         });
 
                         groupe.getChildren().add(pieceView);
                         }
-
+                        
                         caseDepartX = caseDepartX + demiLargeur;
                         caseDepartY = caseDepartY + demiHauteur;
                         ligne --;
@@ -276,6 +338,14 @@ public class BoardView extends Pane {
                         }
                         int idCase = (tiers - 1) * 32 + (ligne - 1) * 8 + (colonne - 1);
                         Position position = positions.get(idCase);
+                        
+                        Piece pieceOnCase = board.getPiece(position);
+
+                        if (pieceOnCase != null
+                                && pieceOnCase.getType() == PieceType.King
+                                && engine.isKingInCheck(pieceOnCase.getOwner())) {
+                            losange.setFill(Color.web("#fd7b7b"));
+                        }
                         if(position!=null){
                             if (isPossibleDestination(position)) {
                                 losange.setFill(Color.web("#fffeab"));
@@ -287,6 +357,10 @@ public class BoardView extends Pane {
                         }
                         losange.setUserData(position);
                         losange.setOnMouseClicked(event -> {
+                            if (botTurnInProgress) {
+                                event.consume();
+                                return;
+                            }
                             Position destination = (Position) losange.getUserData();
                             System.out.println("Case cliquée : " + destination);
 
@@ -302,6 +376,9 @@ public class BoardView extends Pane {
                                     }
                                     else{
                                         drawBoard();
+                                    }
+                                    if (engine.isGameOver()) {
+                                        showVictoryMessage();
                                     }
                                 }
                             } else {
@@ -320,6 +397,10 @@ public class BoardView extends Pane {
                             pieceView.getTransforms().add(new Rotate(-angleTotal, caseDepartX, caseDepartY));
                             pieceView.setUserData(position);
                             pieceView.setOnMouseClicked(event -> {
+                                if (botTurnInProgress) {
+                                event.consume();
+                                return;
+                            }
                             Position clickedPosition = (Position) pieceView.getUserData();
                             Piece clickedPiece = board.getPiece(clickedPosition);
 
@@ -339,6 +420,9 @@ public class BoardView extends Pane {
                                     }
                                     else{
                                         drawBoard();
+                                    }
+                                    if (engine.isGameOver()) {
+                                        showVictoryMessage();
                                     }
                                 }
 
@@ -365,6 +449,8 @@ public class BoardView extends Pane {
                             }
 
                             moves = legalMoves;
+                            
+                            
 
                             drawBoard();
                             event.consume();
@@ -372,7 +458,6 @@ public class BoardView extends Pane {
 
                             groupe.getChildren().add(pieceView);
                         }
-
                         caseDepartX = caseDepartX + demiLargeur;
                         caseDepartY = caseDepartY + demiHauteur;
                         colonne++;  
@@ -409,6 +494,14 @@ public class BoardView extends Pane {
                         }
                         int idCase = (tiers - 1) * 32 + (ligne - 1) * 8 + (colonne - 1);
                         Position position = positions.get(idCase);
+                        
+                        Piece pieceOnCase = board.getPiece(position);
+
+                        if (pieceOnCase != null
+                                && pieceOnCase.getType() == PieceType.King
+                                && engine.isKingInCheck(pieceOnCase.getOwner())) {
+                            losange.setFill(Color.web("#fd7b7b"));
+                        }
                         if(position!=null){
                             if (isPossibleDestination(position)) {
                                 losange.setFill(Color.web("#fffeab"));
@@ -420,6 +513,10 @@ public class BoardView extends Pane {
                         }
                         losange.setUserData(position);
                         losange.setOnMouseClicked(event -> {
+                            if (botTurnInProgress) {
+                                event.consume();
+                                return;
+                            }
                             Position destination = (Position) losange.getUserData();
                             System.out.println("Case cliquée : " + destination);
 
@@ -435,6 +532,9 @@ public class BoardView extends Pane {
                                     }
                                     else{
                                         drawBoard();
+                                    }
+                                    if (engine.isGameOver()) {
+                                        showVictoryMessage();
                                     }
                                 }
                             } else {
@@ -453,6 +553,10 @@ public class BoardView extends Pane {
                             pieceView.getTransforms().add(new Rotate(-angleTotal, caseDepartX, caseDepartY));
                             pieceView.setUserData(position);
                             pieceView.setOnMouseClicked(event -> {
+                                if (botTurnInProgress) {
+                                event.consume();
+                                return;
+                            }
                             Position clickedPosition = (Position) pieceView.getUserData();
                             Piece clickedPiece = board.getPiece(clickedPosition);
 
@@ -472,6 +576,9 @@ public class BoardView extends Pane {
                                     }
                                     else{
                                         drawBoard();
+                                    }
+                                    if (engine.isGameOver()) {
+                                        showVictoryMessage();
                                     }
                                 }
 
@@ -498,14 +605,15 @@ public class BoardView extends Pane {
                             }
 
                             moves = legalMoves;
-
+                            
+                            
                             drawBoard();
                             event.consume();
                         });
 
                             groupe.getChildren().add(pieceView);
                         }
-
+                        
                         caseDepartX = caseDepartX + demiLargeur;
                         caseDepartY = caseDepartY + demiHauteur;
                         ligne --;
@@ -543,6 +651,14 @@ public class BoardView extends Pane {
                         }
                         int idCase = (tiers - 1) * 32 + (ligne - 1) * 8 + (colonne - 1);
                         Position position = positions.get(idCase);
+                        
+                        Piece pieceOnCase = board.getPiece(position);
+
+                        if (pieceOnCase != null
+                                && pieceOnCase.getType() == PieceType.King
+                                && engine.isKingInCheck(pieceOnCase.getOwner())) {
+                            losange.setFill(Color.web("#fd7b7b"));
+                        }
                         if(position!=null){
                             if (isPossibleDestination(position)) {
                                 losange.setFill(Color.web("#fffeab"));
@@ -554,6 +670,10 @@ public class BoardView extends Pane {
                         }
                         losange.setUserData(position);
                         losange.setOnMouseClicked(event -> {
+                            if (botTurnInProgress) {
+                                event.consume();
+                                return;
+                            }
                             Position destination = (Position) losange.getUserData();
                             System.out.println("Case cliquée : " + destination);
 
@@ -569,6 +689,9 @@ public class BoardView extends Pane {
                                     }
                                     else{
                                         drawBoard();
+                                    }
+                                    if (engine.isGameOver()) {
+                                        showVictoryMessage();
                                     }
                                 }
                             } else {
@@ -586,7 +709,11 @@ public class BoardView extends Pane {
                             pieceView.setY(caseDepartY - 20);
                             pieceView.getTransforms().add(new Rotate(-angleTotal, caseDepartX, caseDepartY));
                             pieceView.setUserData(position);
-                           pieceView.setOnMouseClicked(event -> {
+                            pieceView.setOnMouseClicked(event -> {
+                            if (botTurnInProgress) {
+                                event.consume();
+                                return;
+                            }
                             Position clickedPosition = (Position) pieceView.getUserData();
                             Piece clickedPiece = board.getPiece(clickedPosition);
 
@@ -606,6 +733,9 @@ public class BoardView extends Pane {
                                     }
                                     else{
                                         drawBoard();
+                                    }
+                                    if (engine.isGameOver()) {
+                                        showVictoryMessage();
                                     }
                                 }
 
@@ -632,14 +762,15 @@ public class BoardView extends Pane {
                             }
 
                             moves = legalMoves;
-
+                            
+                            
                             drawBoard();
                             event.consume();
                         });
 
                             groupe.getChildren().add(pieceView);
                         }
-
+                        
                         caseDepartX = caseDepartX + demiLargeur;
                         caseDepartY = caseDepartY + demiHauteur;
                         colonne++; 
@@ -676,6 +807,14 @@ public class BoardView extends Pane {
                         }
                         int idCase = (tiers - 1) * 32 + (ligne - 1) * 8 + (colonne - 1);
                         Position position = positions.get(idCase);
+                        
+                        Piece pieceOnCase = board.getPiece(position);
+
+                        if (pieceOnCase != null
+                                && pieceOnCase.getType() == PieceType.King
+                                && engine.isKingInCheck(pieceOnCase.getOwner())) {
+                            losange.setFill(Color.web("#fd7b7b"));
+                        }
                         if(position!=null){
                             if (isPossibleDestination(position)) {
                                 losange.setFill(Color.web("#fffeab"));
@@ -687,6 +826,10 @@ public class BoardView extends Pane {
                         }
                         losange.setUserData(position);
                         losange.setOnMouseClicked(event -> {
+                            if (botTurnInProgress) {
+                                event.consume();
+                                return;
+                            }
                             Position destination = (Position) losange.getUserData();
                             System.out.println("Case cliquée : " + destination);
 
@@ -702,6 +845,9 @@ public class BoardView extends Pane {
                                     }
                                     else{
                                         drawBoard();
+                                    }
+                                    if (engine.isGameOver()) {
+                                        showVictoryMessage();
                                     }
                                 }
                             } else {
@@ -720,6 +866,10 @@ public class BoardView extends Pane {
                             pieceView.getTransforms().add(new Rotate(-angleTotal, caseDepartX, caseDepartY));
                             pieceView.setUserData(position);
                             pieceView.setOnMouseClicked(event -> {
+                                if (botTurnInProgress) {
+                                event.consume();
+                                return;
+                            }
                             Position clickedPosition = (Position) pieceView.getUserData();
                             Piece clickedPiece = board.getPiece(clickedPosition);
 
@@ -739,6 +889,9 @@ public class BoardView extends Pane {
                                     }
                                     else{
                                         drawBoard();
+                                    }
+                                    if (engine.isGameOver()) {
+                                        showVictoryMessage();
                                     }
                                 }
 
@@ -765,6 +918,8 @@ public class BoardView extends Pane {
                             }
 
                             moves = legalMoves;
+                            
+                            
 
                             drawBoard();
                             event.consume();
@@ -772,7 +927,7 @@ public class BoardView extends Pane {
 
                             groupe.getChildren().add(pieceView);
                         }
-
+                        
                         caseDepartX = caseDepartX + demiLargeur;
                         caseDepartY = caseDepartY + demiHauteur;
                         ligne --;
@@ -810,6 +965,14 @@ public class BoardView extends Pane {
                         }
                         int idCase = (tiers - 1) * 32 + (ligne - 1) * 8 + (colonne - 1);
                         Position position = positions.get(idCase);
+                        
+                        Piece pieceOnCase = board.getPiece(position);
+
+                        if (pieceOnCase != null
+                                && pieceOnCase.getType() == PieceType.King
+                                && engine.isKingInCheck(pieceOnCase.getOwner())) {
+                            losange.setFill(Color.web("#fd7b7b"));
+                        }
                         if(position!=null){
                             if (isPossibleDestination(position)) {
                                 losange.setFill(Color.web("#fffeab"));
@@ -821,6 +984,10 @@ public class BoardView extends Pane {
                         }
                         losange.setUserData(position);
                         losange.setOnMouseClicked(event -> {
+                            if (botTurnInProgress) {
+                                event.consume();
+                                return;
+                            }
                             Position destination = (Position) losange.getUserData();
                             System.out.println("Case cliquée : " + destination);
 
@@ -836,6 +1003,9 @@ public class BoardView extends Pane {
                                     }
                                     else{
                                         drawBoard();
+                                    }
+                                    if (engine.isGameOver()) {
+                                        showVictoryMessage();
                                     }
                                 }
                             } else {
@@ -854,6 +1024,10 @@ public class BoardView extends Pane {
                             pieceView.getTransforms().add(new Rotate(-angleTotal, caseDepartX, caseDepartY));
                             pieceView.setUserData(position);
                             pieceView.setOnMouseClicked(event -> {
+                                if (botTurnInProgress) {
+                                event.consume();
+                                return;
+                            }
                             Position clickedPosition = (Position) pieceView.getUserData();
                             Piece clickedPiece = board.getPiece(clickedPosition);
 
@@ -873,6 +1047,9 @@ public class BoardView extends Pane {
                                     }
                                     else{
                                         drawBoard();
+                                    }
+                                    if (engine.isGameOver()) {
+                                        showVictoryMessage();
                                     }
                                 }
 
@@ -899,13 +1076,14 @@ public class BoardView extends Pane {
                             }
 
                             moves = legalMoves;
-
+                            
+                            
                             drawBoard();
                             event.consume();
                         });
                             groupe.getChildren().add(pieceView);
                         }
-
+                        
                         caseDepartX = caseDepartX + demiLargeur;
                         caseDepartY = caseDepartY + demiHauteur;
                         colonne++;
@@ -1044,5 +1222,32 @@ public class BoardView extends Pane {
 
         this.getChildren().add(panel);
     }
+
+    public void updateUiInfo() {
+        if (statusLabel == null || timerLabel == null) return;
+
+        if (engine.isGameOver()) {
+            statusLabel.setText("Victoire : " + engine.getWinner());
+        } else {
+            statusLabel.setText("Tour de : " + engine.getCurrentPlayer());
+        }
+
+        long elapsed = (System.currentTimeMillis() - startTime) / 1000;
+        long minutes = elapsed / 60;
+        long seconds = elapsed % 60;
+
+        timerLabel.setText(String.format("Temps : %02d:%02d", minutes, seconds));
+    }
+
+    public void showVictoryMessage() {
+    Label victory = new Label("Victoire : " + engine.getWinner());
+    victory.setTextFill(Color.GOLD);
+    victory.setStyle("-fx-font-size: 36px; -fx-font-weight: bold;");
+
+    victory.setLayoutX(getScene().getWidth() / 2 - 150);
+    victory.setLayoutY(getScene().getHeight() / 2 - 40);
+
+    this.getChildren().add(victory);
+}
 
 }
