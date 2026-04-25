@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.chess.factories.PieceFactory;
 import com.chess.model.Board;
 import com.chess.model.Couleur;
 import com.chess.model.Move;
@@ -14,17 +13,15 @@ import com.chess.model.PieceType;
 import com.chess.model.Position;
 import com.chess.model.engine.GameEngine;
 
-import javafx.scene.text.Text;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.animation.Timeline;
-import javafx.animation.KeyFrame;
-import javafx.util.Duration;
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -40,31 +37,24 @@ public class BoardView extends Pane {
     private Piece selectedPiece = null;
     private Position selectedPosition = null;
     private Label statusLabel;
-    private Label timerLabel;
-    private long startTime;
-    private Timeline timer;
-    private boolean botTurnInProgress = false; 
-    private boolean debugPositions = true;
+    private Label victoryLabel; 
 
 
-    public BoardView(Board board,GameEngine engine) {
+    public BoardView(Board board, GameEngine engine) {
         this.board = board;
         this.engine = engine;
-        startTime = System.currentTimeMillis();
+
+        setStyle("-fx-background-color: transparent;");
+        setBackground(javafx.scene.layout.Background.EMPTY);
 
         statusLabel = new Label();
-        statusLabel.setTextFill(Color.web("#353535"));
+        statusLabel.setTextFill(Color.SILVER);
         statusLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-        timerLabel = new Label();
-        timerLabel.setTextFill(Color.web("#353535"));
-        timerLabel.setStyle("-fx-font-size: 18px;");
+        victoryLabel = new Label();
+        victoryLabel.setTextFill(Color.GOLD);
+        victoryLabel.setStyle("-fx-font-size: 36px; -fx-font-weight: bold;");
 
-        timer = new Timeline(
-            new KeyFrame(Duration.seconds(1), e -> updateUiInfo())
-        );
-        timer.setCycleCount(Timeline.INDEFINITE);
-        timer.play();
         sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.widthProperty().addListener((obsWidth, oldWidth, newWidth) -> drawBoard());
@@ -92,16 +82,10 @@ public class BoardView extends Pane {
         
         this.getTransforms().clear();
         this.getChildren().clear();
+        this.setBackground(javafx.scene.layout.Background.EMPTY);
+        updateStatusLabel();
+        this.getChildren().add(statusLabel);
 
-        updateUiInfo();
-
-        statusLabel.setLayoutX(20);
-        statusLabel.setLayoutY(20);
-
-        timerLabel.setLayoutX(20);
-        timerLabel.setLayoutY(50);
-
-        this.getChildren().addAll(statusLabel, timerLabel);
 
         Map<Integer,Position> positions = board.getPositions();
 
@@ -132,7 +116,23 @@ public class BoardView extends Pane {
             rotationPane.setPivotY(originY);
             rotationPane.setAngle(30);
             this.getTransforms().add(rotationPane);
-            
+
+            Rotate inverseRotation = new Rotate();
+            inverseRotation.setPivotX(originX);
+            inverseRotation.setPivotY(originY);
+            inverseRotation.setAngle(-30);
+
+            statusLabel.getTransforms().setAll(inverseRotation);
+
+            if (engine.isGameOver()) {
+            showVictoryMessage();
+            }
+
+            if (victoryLabel != null) {
+                victoryLabel.getTransforms().setAll(
+                    new Rotate(-30, originX, originY)
+                );
+            }
     }       
 
 
@@ -195,7 +195,7 @@ public class BoardView extends Pane {
                         
                         losange.setUserData(position);
                         losange.setOnMouseClicked(event -> {
-                            if (botTurnInProgress) {
+                            if (engine.isBotTurnInProgress()) {
                                 event.consume();
                                 return;
                             }
@@ -209,16 +209,9 @@ public class BoardView extends Pane {
 
                                 if (success) {
                                     clearSelection();
-                                    if (board.hasPendingPromotion()) {
-                                        showPromotionPanel();
-                                    }
-                                    else{
-                                        drawBoard();
-                                    }
+                                    drawBoard();
 
-                                    if (engine.isGameOver()) {
-                                        showVictoryMessage();
-                                    }
+                                    
                                     
                                 }
                             } else {
@@ -237,7 +230,7 @@ public class BoardView extends Pane {
                         pieceView.getTransforms().add(new Rotate(-angleTotal, caseDepartX, caseDepartY));
                         pieceView.setUserData(position);
                         pieceView.setOnMouseClicked(event -> {
-                            if (botTurnInProgress) {
+                            if (engine.isBotTurnInProgress()) {
                                 event.consume();
                                 return;
                             }
@@ -255,15 +248,8 @@ public class BoardView extends Pane {
 
                                 if (success) {
                                     clearSelection();
-                                    if (board.hasPendingPromotion()) {
-                                        showPromotionPanel();
-                                    }
-                                    else{
-                                        drawBoard();
-                                    }
-                                    if (engine.isGameOver()) {
-                                        showVictoryMessage();
-                                    }
+                                    drawBoard();
+                                    
                                 }
 
                                 event.consume();
@@ -357,7 +343,7 @@ public class BoardView extends Pane {
                         }
                         losange.setUserData(position);
                         losange.setOnMouseClicked(event -> {
-                            if (botTurnInProgress) {
+                            if (engine.isBotTurnInProgress()) {
                                 event.consume();
                                 return;
                             }
@@ -371,15 +357,8 @@ public class BoardView extends Pane {
 
                                 if (success) {
                                     clearSelection();
-                                    if (board.hasPendingPromotion()) {
-                                        showPromotionPanel();
-                                    }
-                                    else{
-                                        drawBoard();
-                                    }
-                                    if (engine.isGameOver()) {
-                                        showVictoryMessage();
-                                    }
+                                    drawBoard();
+                                    
                                 }
                             } else {
                                 clearSelection();
@@ -397,7 +376,7 @@ public class BoardView extends Pane {
                             pieceView.getTransforms().add(new Rotate(-angleTotal, caseDepartX, caseDepartY));
                             pieceView.setUserData(position);
                             pieceView.setOnMouseClicked(event -> {
-                                if (botTurnInProgress) {
+                                if (engine.isBotTurnInProgress()) {
                                 event.consume();
                                 return;
                             }
@@ -415,15 +394,8 @@ public class BoardView extends Pane {
 
                                 if (success) {
                                     clearSelection();
-                                    if (board.hasPendingPromotion()) {
-                                        showPromotionPanel();
-                                    }
-                                    else{
-                                        drawBoard();
-                                    }
-                                    if (engine.isGameOver()) {
-                                        showVictoryMessage();
-                                    }
+                                    drawBoard();
+                                    
                                 }
 
                                 event.consume();
@@ -513,7 +485,7 @@ public class BoardView extends Pane {
                         }
                         losange.setUserData(position);
                         losange.setOnMouseClicked(event -> {
-                            if (botTurnInProgress) {
+                            if (engine.isBotTurnInProgress()) {
                                 event.consume();
                                 return;
                             }
@@ -527,15 +499,8 @@ public class BoardView extends Pane {
 
                                 if (success) {
                                     clearSelection();
-                                    if (board.hasPendingPromotion()) {
-                                        showPromotionPanel();
-                                    }
-                                    else{
-                                        drawBoard();
-                                    }
-                                    if (engine.isGameOver()) {
-                                        showVictoryMessage();
-                                    }
+                                    drawBoard();
+                                    
                                 }
                             } else {
                                 clearSelection();
@@ -553,7 +518,7 @@ public class BoardView extends Pane {
                             pieceView.getTransforms().add(new Rotate(-angleTotal, caseDepartX, caseDepartY));
                             pieceView.setUserData(position);
                             pieceView.setOnMouseClicked(event -> {
-                                if (botTurnInProgress) {
+                                if (engine.isBotTurnInProgress()) {
                                 event.consume();
                                 return;
                             }
@@ -571,15 +536,8 @@ public class BoardView extends Pane {
 
                                 if (success) {
                                     clearSelection();
-                                    if (board.hasPendingPromotion()) {
-                                        showPromotionPanel();
-                                    }
-                                    else{
-                                        drawBoard();
-                                    }
-                                    if (engine.isGameOver()) {
-                                        showVictoryMessage();
-                                    }
+                                    drawBoard();
+                                    
                                 }
 
                                 event.consume();
@@ -670,7 +628,7 @@ public class BoardView extends Pane {
                         }
                         losange.setUserData(position);
                         losange.setOnMouseClicked(event -> {
-                            if (botTurnInProgress) {
+                            if (engine.isBotTurnInProgress()) {
                                 event.consume();
                                 return;
                             }
@@ -684,15 +642,8 @@ public class BoardView extends Pane {
 
                                 if (success) {
                                     clearSelection();
-                                    if (board.hasPendingPromotion()) {
-                                        showPromotionPanel();
-                                    }
-                                    else{
-                                        drawBoard();
-                                    }
-                                    if (engine.isGameOver()) {
-                                        showVictoryMessage();
-                                    }
+                                    drawBoard();
+                                    
                                 }
                             } else {
                                 clearSelection();
@@ -710,7 +661,7 @@ public class BoardView extends Pane {
                             pieceView.getTransforms().add(new Rotate(-angleTotal, caseDepartX, caseDepartY));
                             pieceView.setUserData(position);
                             pieceView.setOnMouseClicked(event -> {
-                            if (botTurnInProgress) {
+                            if (engine.isBotTurnInProgress()) {
                                 event.consume();
                                 return;
                             }
@@ -728,15 +679,8 @@ public class BoardView extends Pane {
 
                                 if (success) {
                                     clearSelection();
-                                    if (board.hasPendingPromotion()) {
-                                        showPromotionPanel();
-                                    }
-                                    else{
-                                        drawBoard();
-                                    }
-                                    if (engine.isGameOver()) {
-                                        showVictoryMessage();
-                                    }
+                                    drawBoard();
+                                    
                                 }
 
                                 event.consume();
@@ -826,7 +770,7 @@ public class BoardView extends Pane {
                         }
                         losange.setUserData(position);
                         losange.setOnMouseClicked(event -> {
-                            if (botTurnInProgress) {
+                            if (engine.isBotTurnInProgress()) {
                                 event.consume();
                                 return;
                             }
@@ -840,15 +784,8 @@ public class BoardView extends Pane {
 
                                 if (success) {
                                     clearSelection();
-                                    if (board.hasPendingPromotion()) {
-                                        showPromotionPanel();
-                                    }
-                                    else{
-                                        drawBoard();
-                                    }
-                                    if (engine.isGameOver()) {
-                                        showVictoryMessage();
-                                    }
+                                    drawBoard();
+                                    
                                 }
                             } else {
                                 clearSelection();
@@ -866,7 +803,7 @@ public class BoardView extends Pane {
                             pieceView.getTransforms().add(new Rotate(-angleTotal, caseDepartX, caseDepartY));
                             pieceView.setUserData(position);
                             pieceView.setOnMouseClicked(event -> {
-                                if (botTurnInProgress) {
+                                if (engine.isBotTurnInProgress()) {
                                 event.consume();
                                 return;
                             }
@@ -884,15 +821,8 @@ public class BoardView extends Pane {
 
                                 if (success) {
                                     clearSelection();
-                                    if (board.hasPendingPromotion()) {
-                                        showPromotionPanel();
-                                    }
-                                    else{
-                                        drawBoard();
-                                    }
-                                    if (engine.isGameOver()) {
-                                        showVictoryMessage();
-                                    }
+                                    drawBoard();
+                                    
                                 }
 
                                 event.consume();
@@ -984,7 +914,7 @@ public class BoardView extends Pane {
                         }
                         losange.setUserData(position);
                         losange.setOnMouseClicked(event -> {
-                            if (botTurnInProgress) {
+                            if (engine.isBotTurnInProgress()) {
                                 event.consume();
                                 return;
                             }
@@ -998,15 +928,8 @@ public class BoardView extends Pane {
 
                                 if (success) {
                                     clearSelection();
-                                    if (board.hasPendingPromotion()) {
-                                        showPromotionPanel();
-                                    }
-                                    else{
-                                        drawBoard();
-                                    }
-                                    if (engine.isGameOver()) {
-                                        showVictoryMessage();
-                                    }
+                                    drawBoard();
+                                    
                                 }
                             } else {
                                 clearSelection();
@@ -1024,7 +947,7 @@ public class BoardView extends Pane {
                             pieceView.getTransforms().add(new Rotate(-angleTotal, caseDepartX, caseDepartY));
                             pieceView.setUserData(position);
                             pieceView.setOnMouseClicked(event -> {
-                                if (botTurnInProgress) {
+                                if (engine.isBotTurnInProgress()) {
                                 event.consume();
                                 return;
                             }
@@ -1042,15 +965,7 @@ public class BoardView extends Pane {
 
                                 if (success) {
                                     clearSelection();
-                                    if (board.hasPendingPromotion()) {
-                                        showPromotionPanel();
-                                    }
-                                    else{
-                                        drawBoard();
-                                    }
-                                    if (engine.isGameOver()) {
-                                        showVictoryMessage();
-                                    }
+                                    drawBoard();
                                 }
 
                                 event.consume();
@@ -1157,97 +1072,78 @@ public class BoardView extends Pane {
         moves = null;
     }
 
-    public void showPromotionPanel() {
-        Position pos = board.getPromotionPendingPosition();
-        Piece pawn = board.getPiece(pos);
-
-        if (pos == null || pawn == null) return;
-
-        Group panel = new Group();
-
-        double size = 55;
-        double spacing = 10;
-        double startX = getScene().getWidth() / 2 - 130;
-        double startY = getScene().getHeight() / 2 - 35;
-
-        javafx.scene.shape.Rectangle background =
-                new javafx.scene.shape.Rectangle(startX - 15, startY - 15, 290, 90);
-        background.setFill(Color.web("#222222"));
-        background.setStroke(Color.WHITE);
-        background.setStrokeWidth(2);
-
-        panel.getChildren().add(background);
-
-        PieceType[] choices = {
-                PieceType.Queen,
-                PieceType.Rook,
-                PieceType.Knight,
-                PieceType.Bishop
-        };
-
-        for (int i = 0; i < choices.length; i++) {
-            PieceType type = choices[i];
-
-            Piece previewPiece = PieceFactory.createPiece(type, pawn.getOwner(), pawn.getColor(),PieceFactory.getStrategies(), pawn.getStartTier());
-
-            ImageView img = new ImageView(getImageForPiece(previewPiece));
-            img.setFitWidth(size);
-            img.setFitHeight(size);
-            img.setX(startX + i * (size + spacing));
-            img.setY(startY);
-
-            img.setOnMouseClicked(e -> {
-                engine.promotePendingPawn(type);
-                drawBoard();
-            });
-            
-            panel.getChildren().add(img);
-        }
-
-        Scene scene = getScene();
-        if (scene == null) return;
-
-        double sceneWidth = scene.getWidth();
-        double sceneHeight = scene.getHeight();
-
-        double originX = sceneWidth / 2;
-        double originY = sceneHeight - (sceneHeight / 2);
-
-        Rotate rotation = new Rotate();
-        rotation.setAngle(-30);
-        rotation.setPivotX(originX);
-        rotation.setPivotY(originY);
-
-        panel.getTransforms().add(rotation);
-
-        this.getChildren().add(panel);
-    }
-
-    public void updateUiInfo() {
-        if (statusLabel == null || timerLabel == null) return;
+    public void updateStatusLabel() {
+        statusLabel.setLayoutX(20);
+        statusLabel.setLayoutY(20);
 
         if (engine.isGameOver()) {
-            statusLabel.setText("Victoire : " + engine.getWinner());
+            statusLabel.setText("Partie terminée");
         } else {
             statusLabel.setText("Tour de : " + engine.getCurrentPlayer());
         }
-
-        long elapsed = (System.currentTimeMillis() - startTime) / 1000;
-        long minutes = elapsed / 60;
-        long seconds = elapsed % 60;
-
-        timerLabel.setText(String.format("Temps : %02d:%02d", minutes, seconds));
     }
 
     public void showVictoryMessage() {
-    Label victory = new Label("Victoire : " + engine.getWinner());
-    victory.setTextFill(Color.GOLD);
-    victory.setStyle("-fx-font-size: 36px; -fx-font-weight: bold;");
+        Scene scene = getScene();
+        if (scene == null) return;
 
-    victory.setLayoutX(getScene().getWidth() / 2 - 150);
-    victory.setLayoutY(getScene().getHeight() / 2 - 40);
+        double width = scene.getWidth();
+        double height = scene.getHeight();
 
-    this.getChildren().add(victory);
-}
+        //overlay sombre
+        Rectangle overlay = new Rectangle(width, height);
+        overlay.setFill(Color.color(0, 0, 0, 0.4));
+
+        //panel blanc
+        Rectangle bg = new Rectangle(300, 100);
+        bg.setFill(Color.web("#a7a7a7"));
+        bg.setArcWidth(20);
+        bg.setArcHeight(20);
+        bg.setStroke(Color.GOLD);
+
+        double centerX = width / 2;
+        double centerY = height / 2;
+
+        bg.setX(centerX - 150);
+        bg.setY(centerY - 50);
+
+        //texte
+        Label victory = new Label("Victoire : " + engine.getWinner() + " 🏆");
+        victory.setTextFill(Color.GOLD);
+        victory.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        victory.setLayoutX(centerX - 120);
+        victory.setLayoutY(centerY - 15);
+
+        Button replayButton = new Button("Rejouer");
+        replayButton.setLayoutX(centerX - 110);
+        replayButton.setLayoutY(centerY + 20);
+
+        Button quitButton = new Button("Quitter");
+        quitButton.setLayoutX(centerX + 30);
+        quitButton.setLayoutY(centerY + 20);
+
+        replayButton.setOnAction(e -> {
+            engine.resetGame();
+            clearSelection();
+            drawBoard();
+        });
+
+        quitButton.setOnAction(e -> {
+            Platform.exit();
+        });
+
+        Group panel = new Group(bg, victory, replayButton, quitButton);
+
+        //rotation inverse
+        double originX = width / 2;
+        double originY = height / 2;
+        panel.getTransforms().add(new Rotate(-30, originX, originY));
+        overlay.getTransforms().add(new Rotate(-30, originX, originY));
+
+        //ordre d'affichage
+        this.getChildren().addAll(overlay, panel);
+        overlay.toFront();
+        panel.toFront();
+    }
 
 }

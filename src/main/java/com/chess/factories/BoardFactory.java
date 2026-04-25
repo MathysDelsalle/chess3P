@@ -220,40 +220,40 @@ public class BoardFactory {
     public static void placeInitialPieces(Board board, Map<Integer, Position> positions, People p, People b1, People b2){
         int i=1;
         //blue player ( bot1 )
-        board.setPiece(board.findPosition(positions, 2, 1, i), PieceFactory.createPiece(PieceType.Rook, b1, Couleur.blue,PieceFactory.getStrategies(),2));
-        board.setPiece(board.findPosition(positions, 2, 4, 1), PieceFactory.createPiece(PieceType.Knight, b1, Couleur.blue,PieceFactory.getStrategies(),2));
-        board.setPiece(board.findPosition(positions, 2, 1, i+2), PieceFactory.createPiece(PieceType.Bishop, b1, Couleur.blue,PieceFactory.getStrategies(),2));
-        board.setPiece(board.findPosition(positions, 2, 1, i+3), PieceFactory.createPiece(PieceType.Queen, b1, Couleur.blue,PieceFactory.getStrategies(),2));
-        board.setPiece(board.findPosition(positions, 2, 1, i+4), PieceFactory.createPiece(PieceType.King, b1, Couleur.blue,PieceFactory.getStrategies(),2));
-        board.setPiece(board.findPosition(positions, 2, 1, i+5), PieceFactory.createPiece(PieceType.Bishop, b1, Couleur.blue,PieceFactory.getStrategies(),2));
-        board.setPiece(board.findPosition(positions, 2, 1, i+6), PieceFactory.createPiece(PieceType.Knight, b1, Couleur.blue,PieceFactory.getStrategies(),2));
-        board.setPiece(board.findPosition(positions, 2, 1, i+7), PieceFactory.createPiece(PieceType.Rook, b1, Couleur.blue,PieceFactory.getStrategies(),2));
+        board.setPiece(board.findPosition(positions, 2, 1, i), PieceFactory.createPiece(PieceType.Rook, b1, Couleur.blue,PieceFactory.getStrategies(),2,5));
+        board.setPiece(board.findPosition(positions, 2, 1, i+1), PieceFactory.createPiece(PieceType.Knight, b1, Couleur.blue,PieceFactory.getStrategies(),2,3));
+        board.setPiece(board.findPosition(positions, 2, 1, i+2), PieceFactory.createPiece(PieceType.Bishop, b1, Couleur.blue,PieceFactory.getStrategies(),2,3));
+        board.setPiece(board.findPosition(positions, 2, 1, i+3), PieceFactory.createPiece(PieceType.Queen, b1, Couleur.blue,PieceFactory.getStrategies(),2,9));
+        board.setPiece(board.findPosition(positions, 2, 1, i+4), PieceFactory.createPiece(PieceType.King, b1, Couleur.blue,PieceFactory.getStrategies(),2,100));
+        board.setPiece(board.findPosition(positions, 2, 1, i+5), PieceFactory.createPiece(PieceType.Bishop, b1, Couleur.blue,PieceFactory.getStrategies(),2,3));
+        board.setPiece(board.findPosition(positions, 2, 1, i+6), PieceFactory.createPiece(PieceType.Knight, b1, Couleur.blue,PieceFactory.getStrategies(),2,3));
+        board.setPiece(board.findPosition(positions, 2, 1, i+7), PieceFactory.createPiece(PieceType.Rook, b1, Couleur.blue,PieceFactory.getStrategies(),2,5));
 
         //red player ( bot2 )
-        board.setPiece(board.findPosition(positions, 3, 1, i), PieceFactory.createPiece(PieceType.Rook, b2, Couleur.red,PieceFactory.getStrategies(),3));
-        board.setPiece(board.findPosition(positions, 3, 1, i+1), PieceFactory.createPiece(PieceType.Knight, b2, Couleur.red,PieceFactory.getStrategies(),3));
-        board.setPiece(board.findPosition(positions, 3, 4, 8), PieceFactory.createPiece(PieceType.Bishop, b2, Couleur.red,PieceFactory.getStrategies(),3));
-        board.setPiece(board.findPosition(positions, 3, 1, i+3), PieceFactory.createPiece(PieceType.Queen, b2, Couleur.red,PieceFactory.getStrategies(),3));
-        board.setPiece(board.findPosition(positions, 3, 1, i+4), PieceFactory.createPiece(PieceType.King, b2, Couleur.red,PieceFactory.getStrategies(),3));
-        board.setPiece(board.findPosition(positions, 3, 1, i+5), PieceFactory.createPiece(PieceType.Bishop, b2, Couleur.red,PieceFactory.getStrategies(),3));
-        board.setPiece(board.findPosition(positions, 3, 1, i+6), PieceFactory.createPiece(PieceType.Knight, b2, Couleur.red,PieceFactory.getStrategies(),3));
-        board.setPiece(board.findPosition(positions, 3, 1, i+7), PieceFactory.createPiece(PieceType.Rook, b2, Couleur.red,PieceFactory.getStrategies(),3));
+        board.setPiece(board.findPosition(positions, 3, 1, i), PieceFactory.createPiece(PieceType.Rook, b2, Couleur.red,PieceFactory.getStrategies(),3,5));
+        board.setPiece(board.findPosition(positions, 3, 1, i+1), PieceFactory.createPiece(PieceType.Knight, b2, Couleur.red,PieceFactory.getStrategies(),3,3));
+        board.setPiece(board.findPosition(positions, 3, 1, i+2), PieceFactory.createPiece(PieceType.Bishop, b2, Couleur.red,PieceFactory.getStrategies(),3,3));
+        board.setPiece(board.findPosition(positions, 3, 1, i+3), PieceFactory.createPiece(PieceType.Queen, b2, Couleur.red,PieceFactory.getStrategies(),3,9));
+        board.setPiece(board.findPosition(positions, 3, 1, i+4), PieceFactory.createPiece(PieceType.King, b2, Couleur.red,PieceFactory.getStrategies(),3,100));
+        board.setPiece(board.findPosition(positions, 3, 1, i+5), PieceFactory.createPiece(PieceType.Bishop, b2, Couleur.red,PieceFactory.getStrategies(),3,3));
+        board.setPiece(board.findPosition(positions, 3, 1, i+6), PieceFactory.createPiece(PieceType.Knight, b2, Couleur.red,PieceFactory.getStrategies(),3,3));
+        board.setPiece(board.findPosition(positions, 3, 1, i+7), PieceFactory.createPiece(PieceType.Rook, b2, Couleur.red,PieceFactory.getStrategies(),3,5));
 
         //white player ( player )
-        board.setPiece(board.findPosition(positions, 1, 1, i), PieceFactory.createPiece(PieceType.Rook, p, Couleur.white,PieceFactory.getStrategies(),1));
-        board.setPiece(board.findPosition(positions, 1, 1, i+1), PieceFactory.createPiece(PieceType.Knight, p, Couleur.white,PieceFactory.getStrategies(),1));
-        board.setPiece(board.findPosition(positions, 1, 1, i+2), PieceFactory.createPiece(PieceType.Bishop, p, Couleur.white,PieceFactory.getStrategies(),1));
-        board.setPiece(board.findPosition(positions, 1, 1, i+3), PieceFactory.createPiece(PieceType.Queen, p, Couleur.white,PieceFactory.getStrategies(),1));
-        board.setPiece(board.findPosition(positions, 1, 1, i+4), PieceFactory.createPiece(PieceType.King, p, Couleur.white,PieceFactory.getStrategies(),1));
-        board.setPiece(board.findPosition(positions, 1, 1, i+5), PieceFactory.createPiece(PieceType.Bishop, p, Couleur.white,PieceFactory.getStrategies(),1));
-        board.setPiece(board.findPosition(positions, 1, 1, i+6), PieceFactory.createPiece(PieceType.Knight, p, Couleur.white,PieceFactory.getStrategies(),1));
-        board.setPiece(board.findPosition(positions, 1, 1, i+7), PieceFactory.createPiece(PieceType.Rook, p, Couleur.white,PieceFactory.getStrategies(),1));
+        board.setPiece(board.findPosition(positions, 1, 1, i), PieceFactory.createPiece(PieceType.Rook, p, Couleur.white,PieceFactory.getStrategies(),1,5));
+        board.setPiece(board.findPosition(positions, 1, 1, i+1), PieceFactory.createPiece(PieceType.Knight, p, Couleur.white,PieceFactory.getStrategies(),1,3));
+        board.setPiece(board.findPosition(positions, 1, 1, i+2), PieceFactory.createPiece(PieceType.Bishop, p, Couleur.white,PieceFactory.getStrategies(),1,3));
+        board.setPiece(board.findPosition(positions, 1, 1, i+3), PieceFactory.createPiece(PieceType.Queen, p, Couleur.white,PieceFactory.getStrategies(),1,9));
+        board.setPiece(board.findPosition(positions, 1, 1, i+4), PieceFactory.createPiece(PieceType.King, p, Couleur.white,PieceFactory.getStrategies(),1,100));
+        board.setPiece(board.findPosition(positions, 1, 1, i+5), PieceFactory.createPiece(PieceType.Bishop, p, Couleur.white,PieceFactory.getStrategies(),1,3));
+        board.setPiece(board.findPosition(positions, 1, 1, i+6), PieceFactory.createPiece(PieceType.Knight, p, Couleur.white,PieceFactory.getStrategies(),1,3));
+        board.setPiece(board.findPosition(positions, 1, 1, i+7), PieceFactory.createPiece(PieceType.Rook, p, Couleur.white,PieceFactory.getStrategies(),1,3));
         
         //pawns
         for(i=1;i<9;i++){
-        board.setPiece(board.findPosition(positions, 3, 2, i), PieceFactory.createPiece(PieceType.Pawn, b2, Couleur.red,PieceFactory.getStrategies(),3));
-        board.setPiece(board.findPosition(positions, 2, 2, i), PieceFactory.createPiece(PieceType.Pawn, b1, Couleur.blue,PieceFactory.getStrategies(),2));
-        board.setPiece(board.findPosition(positions, 1, 2, i), PieceFactory.createPiece(PieceType.Pawn, p, Couleur.white,PieceFactory.getStrategies(),1));
+        //board.setPiece(board.findPosition(positions, 3, 2, i), PieceFactory.createPiece(PieceType.Pawn, b2, Couleur.red,PieceFactory.getStrategies(),3,1));
+        //board.setPiece(board.findPosition(positions, 2, 2, i), PieceFactory.createPiece(PieceType.Pawn, b1, Couleur.blue,PieceFactory.getStrategies(),2,1));
+        //board.setPiece(board.findPosition(positions, 1, 2, i), PieceFactory.createPiece(PieceType.Pawn, p, Couleur.white,PieceFactory.getStrategies(),1,1));
         }
 
 

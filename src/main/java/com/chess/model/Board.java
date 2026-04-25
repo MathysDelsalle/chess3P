@@ -158,6 +158,19 @@ public class Board {
     public boolean hasPendingPromotion() {
         return promotionPendingPosition != null;
     }
+
+    public void reset() {
+        pieces.clear();
+        neighbors.clear();
+        positions.clear();
+        underAttack.clear();
+        protectedRightNow.clear();
+
+        enPassantTarget = null;
+        enPassantAllowedPlayer = null;
+        capturedPawnPos = null;
+        promotionPendingPosition = null;
+    }
 }
 
 

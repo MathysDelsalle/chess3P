@@ -15,8 +15,9 @@ public class Piece {
     private int StartTier;
     private final int id;
     private static int nextid=0;
+    private int valeurPiece;
 
-    public Piece(PieceType type, People owner, Couleur color, int tier) {
+    public Piece(PieceType type, People owner, Couleur color, int tier,int valeur) {
         this.type = type;
         this.owner = owner;
         this.color = color;

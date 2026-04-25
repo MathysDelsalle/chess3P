@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.chess.factories.BoardFactory;
 import com.chess.factories.PieceFactory;
 import com.chess.model.Board;
 import com.chess.model.Direction;
@@ -16,13 +17,16 @@ import com.chess.model.Position;
 public class GameEngine {
     private final Board board;
     private final List<People> players;
+    private final List<People> initialPlayers;
     private int currentPlayerId;
     private People winner = null;
     private boolean gameOver = false;
+    private boolean botTurnInProgress = false;
 
     public GameEngine(Board board,List<People> players){
         this.board = board;
         this.players = new ArrayList<>(players);
+        this.initialPlayers = new ArrayList<>(players);
         this.currentPlayerId = 0;
     }
 
@@ -341,13 +345,53 @@ public class GameEngine {
 
         Piece pawn = board.getPiece(board.getPromotionPendingPosition());
         if (pawn == null || pawn.getType() != PieceType.Pawn) return;
-
-        Piece promoted = PieceFactory.createPiece(newType, pawn.getOwner(), pawn.getColor(), PieceFactory.getStrategies(), pawn.getStartTier());
+        int score;
+        if(newType==PieceType.Rook){
+            score = 5;
+        }
+        else if(newType==PieceType.Queen){
+            score = 9;
+        }
+        else{
+            score = 3;
+        }
+        Piece promoted = PieceFactory.createPiece(newType, pawn.getOwner(), pawn.getColor(), PieceFactory.getStrategies(), pawn.getStartTier(),score);
         promoted.setHasMoved(true);
 
         board.setPiece(board.getPromotionPendingPosition(), promoted);
         board.setPromotionPendingPosition(null);
     }
 
+    //tour bot
+    public boolean isBotTurnInProgress(){
+        return botTurnInProgress;
+    }
 
+    public void setBotTurnInProgress(boolean botTurnInProgress) {
+        this.botTurnInProgress = botTurnInProgress;
+    }
+
+    public void resetGame() {
+        board.reset();
+
+        players.clear();
+        players.addAll(initialPlayers);
+
+        BoardFactory.createPositions(board);
+        BoardFactory.connectPositions(board, board.getPositions());
+        BoardFactory.placeInitialPieces(
+                board,
+                board.getPositions(),
+                initialPlayers.get(0),
+                initialPlayers.get(1),
+                initialPlayers.get(2)
+        );
+
+        board.recomputeAttackMaps();
+
+        currentPlayerId = 0;
+        winner = null;
+        gameOver = false;
+        botTurnInProgress = false;
+    }
 }
