@@ -211,7 +211,11 @@ public class BoardView extends Pane {
                                     clearSelection();
                                     drawBoard();
 
-                                    playBots();
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
+                                    } else {
+                                        playBots();
+                                    }
                                 }
                             } else {
                                 clearSelection();
@@ -249,7 +253,11 @@ public class BoardView extends Pane {
                                     clearSelection();
                                     drawBoard();
 
-                                    playBots(); 
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
+                                    } else {
+                                        playBots();
+                                    }
                                 }
 
                                 event.consume();
@@ -359,7 +367,11 @@ public class BoardView extends Pane {
                                     clearSelection();
                                     drawBoard();
 
-                                    playBots();  
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
+                                    } else {
+                                        playBots();
+                                    } 
                                 }
                             } else {
                                 clearSelection();
@@ -397,7 +409,11 @@ public class BoardView extends Pane {
                                     clearSelection();
                                     drawBoard();
 
-                                    playBots();  
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
+                                    } else {
+                                        playBots();
+                                    } 
                                 }
 
                                 event.consume();
@@ -503,7 +519,11 @@ public class BoardView extends Pane {
                                     clearSelection();
                                     drawBoard();
 
-                                    playBots();  
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
+                                    } else {
+                                        playBots();
+                                    } 
                                 }
                             } else {
                                 clearSelection();
@@ -541,7 +561,11 @@ public class BoardView extends Pane {
                                     clearSelection();
                                     drawBoard();
 
-                                    playBots(); 
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
+                                    } else {
+                                        playBots();
+                                    }
                                 }
 
                                 event.consume();
@@ -648,7 +672,11 @@ public class BoardView extends Pane {
                                     clearSelection();
                                     drawBoard();
 
-                                    playBots();  
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
+                                    } else {
+                                        playBots();
+                                    }  
                                 }
                             } else {
                                 clearSelection();
@@ -686,7 +714,11 @@ public class BoardView extends Pane {
                                     clearSelection();
                                     drawBoard();
 
-                                    playBots();  
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
+                                    } else {
+                                        playBots();
+                                    } 
                                 }
 
                                 event.consume();
@@ -792,7 +824,11 @@ public class BoardView extends Pane {
                                     clearSelection();
                                     drawBoard();
 
-                                    playBots();  
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
+                                    } else {
+                                        playBots();
+                                    }  
                                 }
                             } else {
                                 clearSelection();
@@ -830,7 +866,11 @@ public class BoardView extends Pane {
                                     clearSelection();
                                     drawBoard();
 
-                                    playBots(); 
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
+                                    } else {
+                                        playBots();
+                                    } 
                                 }
 
                                 event.consume();
@@ -938,7 +978,11 @@ public class BoardView extends Pane {
                                     clearSelection();
                                     drawBoard();
 
-                                    playBots();  
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
+                                    } else {
+                                        playBots();
+                                    }  
                                 }
                             } else {
                                 clearSelection();
@@ -976,7 +1020,11 @@ public class BoardView extends Pane {
                                     clearSelection();
                                     drawBoard();
 
-                                    playBots(); 
+                                    if (board.hasPendingPromotion()) {
+                                        showPromotionPanel();
+                                    } else {
+                                        playBots();
+                                    }
                                 }
 
                                 event.consume();
@@ -1160,7 +1208,8 @@ public class BoardView extends Pane {
     public void playBots() {
         new Thread(() -> {
             try {
-                Thread.sleep(500);
+                //sleep a changer si les bots jouent trop vite
+                Thread.sleep(1);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return;
@@ -1169,6 +1218,7 @@ public class BoardView extends Pane {
             int safety = 0;
 
             while (!engine.isGameOver()
+                    && !board.hasPendingPromotion()
                     && engine.isBot(engine.getCurrentPlayer())
                     && safety < 2) {
 
@@ -1178,7 +1228,7 @@ public class BoardView extends Pane {
                 Platform.runLater(() -> drawBoard());
 
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(1);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     return;
@@ -1187,6 +1237,106 @@ public class BoardView extends Pane {
 
             Platform.runLater(() -> drawBoard());
         }).start();
+    }
+
+    public void showPromotionPanel() {
+        Scene scene = getScene();
+        if (scene == null) return;
+
+        double width = scene.getWidth();
+        double height = scene.getHeight();
+
+        double centerX = width / 2;
+        double centerY = height / 2;
+
+        // Fond du panneau
+        Rectangle bg = new Rectangle(360, 200);
+        bg.setFill(Color.web("#a7a7a7"));
+        bg.setStroke(Color.GOLD);
+        bg.setArcWidth(20);
+        bg.setArcHeight(20);
+        bg.setX(centerX - 180);
+        bg.setY(centerY - 60);
+
+        // Titre
+        Label title = new Label("Promotion");
+        title.setTextFill(Color.GOLD);
+        title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
+        title.setLayoutX(centerX - 60);
+        title.setLayoutY(centerY - 45);
+
+        // Couleur du joueur courant
+        Piece pawn = board.getPiece(board.getPromotionPendingPosition());
+        Couleur color = pawn.getColor();
+
+        // Boutons avec images
+        Button queenButton = createPromotionButton(
+                loadImage("set_" + color + "_queen.png"),
+                centerX - 155,
+                centerY + 15,
+                PieceType.Queen
+        );
+
+        Button rookButton = createPromotionButton(
+                loadImage("set_" + color + "_rook.png"),
+                centerX - 75,
+                centerY + 15,
+                PieceType.Rook
+        );
+
+        Button bishopButton = createPromotionButton(
+                loadImage("set_" + color + "_bishop.png"),
+                centerX - 5,
+                centerY + 15,
+                PieceType.Bishop
+        );
+
+        Button knightButton = createPromotionButton(
+                loadImage("set_" + color + "_knight.png"),
+                centerX + 65,
+                centerY + 15,
+                PieceType.Knight
+        );
+
+        Group panel = new Group(
+                bg,
+                title,
+                queenButton,
+                rookButton,
+                bishopButton,
+                knightButton
+        );
+
+        // Rotation inverse pour rester droit
+        panel.getTransforms().add(
+                new Rotate(-30, width / 2, height / 2)
+        );
+
+        this.getChildren().add(panel);
+        panel.toFront();
+    }
+
+    private Button createPromotionButton(Image image, double x, double y, PieceType pieceType) {
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(40);
+        imageView.setFitHeight(40);
+
+        Button button = new Button();
+        button.setGraphic(imageView);
+        button.setLayoutX(x);
+        button.setLayoutY(y);
+        button.setPrefSize(60, 60);
+
+        button.setOnAction(e -> promoteHumanPawn(pieceType));
+
+        return button;
+    }
+
+    public void promoteHumanPawn(PieceType type) {
+        engine.promotePendingPawn(type);
+        clearSelection();
+        drawBoard();
+        playBots();
     }
 
 }

@@ -86,6 +86,9 @@ public class MoveCommand implements Command {
         }
 
         engine.applyMove(move);
+        if (board.hasPendingPromotion()) {
+            engine.promotePendingPawn(PieceType.Queen);
+        }
         board.recomputeAttackMaps();
         engine.nextTurn();
 

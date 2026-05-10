@@ -23,8 +23,8 @@ public class MainApp extends Application {
     @Override
     public void start(Stage stage) {
         Player p = new Player("Tarti");
-        Bot b1 = new Bot();
-        Bot b2 = new Bot();
+        Player b1 = new Player("Tarti");
+        Player b2 = new Player("Tarti");
 
         Board board = BoardFactory.createInitialBoard(p, b1, b2);
 

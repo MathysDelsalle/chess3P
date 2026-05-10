@@ -251,6 +251,10 @@ public class GameEngine {
         
         People playing = getCurrentPlayer();
 
+        if (board.hasPendingPromotion() && !isBot(playing)) {
+            return true;
+        }
+
         People eliminatedPlayer = null;
 
         for (People player : players) {
@@ -268,8 +272,7 @@ public class GameEngine {
             players.remove(eliminatedPlayer);
         }
 
-        nextTurn();
-        return true;
+        return finishTurnAfterMove(playing);
     }
 
     public boolean isGameOver() {
@@ -341,6 +344,7 @@ public class GameEngine {
         if (board.getPromotionPendingPosition()==null) return;
 
         Piece pawn = board.getPiece(board.getPromotionPendingPosition());
+        People playing = pawn.getOwner();
         if (pawn == null || pawn.getType() != PieceType.Pawn) return;
         int score;
         if(newType==PieceType.Rook){
@@ -357,6 +361,10 @@ public class GameEngine {
 
         board.setPiece(board.getPromotionPendingPosition(), promoted);
         board.setPromotionPendingPosition(null);
+        
+        board.recomputeAttackMaps();
+        
+        finishTurnAfterMove(playing);
     }
 
     //tour bot
@@ -408,6 +416,9 @@ public class GameEngine {
 
         if (move != null) {
             playMove(move);
+            if (board.hasPendingPromotion()) {
+                promotePendingPawn(PieceType.Queen);
+            }
         } else {
             nextTurn();
         }
@@ -452,6 +463,29 @@ public class GameEngine {
         Piece piece = board.getPiece(from);
 
         return new Move(from, to, move.getDirection(), piece);
+    }
+
+    //centralisation de fin de tour
+    public boolean finishTurnAfterMove(People playing) {
+        People eliminatedPlayer = null;
+
+        for (People player : players) {
+            if (!player.equals(playing) && isCheckmate(player)) {
+                winner = playing;
+                gameOver = true;
+                return true;
+            } else if (!player.equals(playing) && isStalemate(player)) {
+                eliminatedPlayer = player;
+                break;
+            }
+        }
+
+        if (eliminatedPlayer != null) {
+            players.remove(eliminatedPlayer);
+        }
+
+        nextTurn();
+        return true;
     }
 
 
