@@ -251,9 +251,9 @@ public class BoardFactory {
         
         //pawns
         for(i=1;i<9;i++){
-        //board.setPiece(board.findPosition(positions, 3, 2, i), PieceFactory.createPiece(PieceType.Pawn, b2, Couleur.red,PieceFactory.getStrategies(),3,1));
-        //board.setPiece(board.findPosition(positions, 2, 2, i), PieceFactory.createPiece(PieceType.Pawn, b1, Couleur.blue,PieceFactory.getStrategies(),2,1));
-        //board.setPiece(board.findPosition(positions, 1, 2, i), PieceFactory.createPiece(PieceType.Pawn, p, Couleur.white,PieceFactory.getStrategies(),1,1));
+        board.setPiece(board.findPosition(positions, 3, 2, i), PieceFactory.createPiece(PieceType.Pawn, b2, Couleur.red,PieceFactory.getStrategies(),3,1));
+        board.setPiece(board.findPosition(positions, 2, 2, i), PieceFactory.createPiece(PieceType.Pawn, b1, Couleur.blue,PieceFactory.getStrategies(),2,1));
+        board.setPiece(board.findPosition(positions, 1, 2, i), PieceFactory.createPiece(PieceType.Pawn, p, Couleur.white,PieceFactory.getStrategies(),1,1));
         }
 
 

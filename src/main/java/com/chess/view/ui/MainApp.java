@@ -12,6 +12,9 @@ import com.chess.model.engine.GameEngine;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -39,7 +42,14 @@ public class MainApp extends Application {
             System.out.println(person);
         }
 
-        Scene scene = new Scene(boardView, 1200, 900);
+        ImageView background = new ImageView(new Image(getClass().getResourceAsStream("/fond/fond.jpg")));
+        background.setFitWidth(1920);
+        background.setFitHeight(1080);
+
+        StackPane root = new StackPane();
+        root.getChildren().addAll(background,boardView);
+
+        Scene scene = new Scene(root, 1200, 900);
         scene.setFill(Color.web("#222222"));
 
         stage.setTitle("Jeu d'Échecs Yalta - JavaFX");

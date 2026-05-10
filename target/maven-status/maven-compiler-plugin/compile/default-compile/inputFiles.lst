@@ -1,17 +1,20 @@
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\AttackInfo.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\People.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\Main.java
+C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\Command.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\PieceType.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\strategy\KingStrategy.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\Piece.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\Couleur.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\Move.java
+C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\PeopleType.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\view\ui\MainApp.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\Player.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\view\ConsoleView.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\Board.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\engine\GameEngine.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\factories\BoardFactory.java
+C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\MoveCommand.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\NextStep.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\strategy\MovementStrategy.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\factories\PieceFactory.java
@@ -22,5 +25,6 @@ C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\strategy\QueenStr
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\Bot.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\Direction.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\strategy\BishopStrategy.java
+C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\ScoredMove.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\view\ui\BoardView.java
 C:\Users\heart\Desktop\PAA\chess\src\main\java\com\chess\model\strategy\KnightStrategy.java

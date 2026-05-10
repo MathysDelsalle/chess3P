@@ -4,10 +4,12 @@ public class Player implements People{
     private String name;
     private static int nextid=0;
     private int id;
+    private PeopleType type;
 
     public Player(String name) {
         this.name = name;
         id=nextid++;
+        type=PeopleType.Player;
     }
     
     @Override
@@ -24,5 +26,10 @@ public class Player implements People{
     @Override
     public int getId() {
         return id;
+    }
+
+    @Override
+    public PeopleType getType() {
+        return type;
     }
 }

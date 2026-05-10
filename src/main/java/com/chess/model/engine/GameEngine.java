@@ -7,9 +7,11 @@ import java.util.Set;
 import com.chess.factories.BoardFactory;
 import com.chess.factories.PieceFactory;
 import com.chess.model.Board;
+import com.chess.model.Bot;
 import com.chess.model.Direction;
 import com.chess.model.Move;
 import com.chess.model.People;
+import com.chess.model.PeopleType;
 import com.chess.model.Piece;
 import com.chess.model.PieceType;
 import com.chess.model.Position;
@@ -35,7 +37,6 @@ public class GameEngine {
     }
 
     public int getCurrentPlayerId() {
-        System.out.println("Tour de : " + players.get(currentPlayerId));
         return currentPlayerId;
     }
 
@@ -51,26 +52,22 @@ public class GameEngine {
         currentPlayerId = (currentPlayerId + 1) % players.size();
     }
 
-    public boolean isMoveValid(Move move){
+    public boolean isMoveValid(Move move) {
         Piece piece = board.getPiece(move.getFrom());
-        
         if (piece == null) return false;
-        List<Move> possibleMoves = piece.getMovementStrategy().getPossibleMoves(move.getFrom(), board, piece);
-
-        if(!possibleMoves.contains(move)) return false;
 
         Piece captured = board.getPiece(move.getTo());
 
+        // Simule le coup
         board.setPiece(move.getTo(), piece);
         board.setPiece(move.getFrom(), null);
-
         board.recomputeAttackMaps();
 
         boolean kingInCheck = isKingInCheck(piece.getOwner());
 
+        // Annule
         board.setPiece(move.getFrom(), piece);
         board.setPiece(move.getTo(), captured);
-
         board.recomputeAttackMaps();
 
         return !kingInCheck;
@@ -394,4 +391,68 @@ public class GameEngine {
         gameOver = false;
         botTurnInProgress = false;
     }
+
+    public void playBotTurn() {
+        if (gameOver) return;
+
+        People current = getCurrentPlayer();
+
+        if (!isBot(current)) return;
+
+        System.out.println("BOT BEFORE -> " + current);
+
+        setBotTurnInProgress(true);
+
+        Bot bot = (Bot) current;
+        Move move = bot.chooseBestMove(this, bot);
+
+        if (move != null) {
+            playMove(move);
+        } else {
+            nextTurn();
+        }
+
+        setBotTurnInProgress(false);
+
+        System.out.println("BOT AFTER -> " + getCurrentPlayer());
+    }
+
+    public boolean isBot(People p){
+        return p.getType().equals(PeopleType.Bot);
+    }
+
+    //command
+    public void setCurrentPlayerId(int currentPlayerId) {
+        this.currentPlayerId = currentPlayerId;
+    }
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
+    }
+    public void setWinner(People winner) {
+        this.winner = winner;
+    }
+
+    public GameEngine deepCopy() {
+        Board boardCopy = board.deepCopy();
+
+        GameEngine engineCopy = new GameEngine(boardCopy, new ArrayList<>(players));
+
+        engineCopy.currentPlayerId = this.currentPlayerId;
+        engineCopy.winner = this.winner;
+        engineCopy.gameOver = this.gameOver;
+        engineCopy.botTurnInProgress = this.botTurnInProgress;
+
+        return engineCopy;
+    }
+
+    public Move findEquivalentMove(Move move) {
+        Position from = board.getPosition(move.getFrom().getId());
+        Position to = board.getPosition(move.getTo().getId());
+
+        Piece piece = board.getPiece(from);
+
+        return new Move(from, to, move.getDirection(), piece);
+    }
+
+
 }

@@ -3,6 +3,7 @@ package com.chess.model;
 import java.util.Map;
 import java.util.Objects;
 
+import com.chess.factories.PieceFactory;
 import com.chess.model.strategy.MovementStrategy;
 
 public class Piece {
@@ -75,6 +76,23 @@ public class Piece {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    //pour le parallelisme
+
+    public Piece copy() {
+        Piece copy = PieceFactory.createPiece(
+                this.type,
+                this.owner,
+                this.color,
+                PieceFactory.getStrategies(),
+                this.StartTier,
+                this.valeurPiece
+        );
+
+        copy.setHasMoved(this.getHasMoved());
+
+        return copy;
     }
 }
 

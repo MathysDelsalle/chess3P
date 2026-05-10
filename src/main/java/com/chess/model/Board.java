@@ -1,6 +1,7 @@
 package com.chess.model;
 import java.util.*;
 
+import com.chess.factories.BoardFactory;
 import com.chess.model.strategy.MovementStrategy;
 
 public class Board {
@@ -170,6 +171,62 @@ public class Board {
         enPassantAllowedPlayer = null;
         capturedPawnPos = null;
         promotionPendingPosition = null;
+    }
+
+    //copie de tout pour que les thread puissent avoir une copy exacte du plateau sans tout casser
+    public Board deepCopy(){
+        Board copy = new Board();
+
+        //recreation des positions
+        for (Position pos : this.positions.values()) {
+            Position newPos = new Position(
+                    pos.getTiers(),
+                    pos.getLigne(),
+                    pos.getColonne()
+            );
+            copy.getPositions().put(newPos.getId(), newPos);
+            copy.addPosition(newPos);
+        }
+
+        //reconexion des positions
+        BoardFactory.connectPositions(copy, copy.getPositions());
+
+        //copie des pieces
+        for (Position pos : this.positions.values()) {
+            Piece piece = this.getPiece(pos);
+            if (piece == null) continue;
+
+            Position newPos = copy.getPosition(pos.getId());
+
+            Piece pieceCopy = piece.copy();
+            copy.setPiece(newPos, pieceCopy);
+        }
+
+        //copier l'etat du en passant
+        if (this.enPassantTarget != null) {
+            copy.setEnPassantTarget(
+                    copy.getPosition(this.enPassantTarget.getId())
+            );
+        }
+
+        if (this.getEnPassantCapturedPawnPosition() != null) {
+            copy.setEnPassantCapturedPawnPosition(
+                    copy.getPosition(this.getEnPassantCapturedPawnPosition().getId())
+            );
+        }
+
+        copy.setEnPassantAllowedPlayer(this.getEnPassantAllowedPlayer());
+
+        //recalcul map attaques
+        if (this.getPromotionPendingPosition() != null) {
+            copy.setPromotionPendingPosition(
+                    copy.getPosition(this.getPromotionPendingPosition().getId())
+            );
+        }
+
+        copy.recomputeAttackMaps();
+
+        return copy;
     }
 }
 

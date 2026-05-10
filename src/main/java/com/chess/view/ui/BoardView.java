@@ -211,8 +211,7 @@ public class BoardView extends Pane {
                                     clearSelection();
                                     drawBoard();
 
-                                    
-                                    
+                                    playBots();
                                 }
                             } else {
                                 clearSelection();
@@ -249,7 +248,8 @@ public class BoardView extends Pane {
                                 if (success) {
                                     clearSelection();
                                     drawBoard();
-                                    
+
+                                    playBots(); 
                                 }
 
                                 event.consume();
@@ -358,7 +358,8 @@ public class BoardView extends Pane {
                                 if (success) {
                                     clearSelection();
                                     drawBoard();
-                                    
+
+                                    playBots();  
                                 }
                             } else {
                                 clearSelection();
@@ -395,7 +396,8 @@ public class BoardView extends Pane {
                                 if (success) {
                                     clearSelection();
                                     drawBoard();
-                                    
+
+                                    playBots();  
                                 }
 
                                 event.consume();
@@ -500,7 +502,8 @@ public class BoardView extends Pane {
                                 if (success) {
                                     clearSelection();
                                     drawBoard();
-                                    
+
+                                    playBots();  
                                 }
                             } else {
                                 clearSelection();
@@ -537,7 +540,8 @@ public class BoardView extends Pane {
                                 if (success) {
                                     clearSelection();
                                     drawBoard();
-                                    
+
+                                    playBots(); 
                                 }
 
                                 event.consume();
@@ -643,7 +647,8 @@ public class BoardView extends Pane {
                                 if (success) {
                                     clearSelection();
                                     drawBoard();
-                                    
+
+                                    playBots();  
                                 }
                             } else {
                                 clearSelection();
@@ -680,7 +685,8 @@ public class BoardView extends Pane {
                                 if (success) {
                                     clearSelection();
                                     drawBoard();
-                                    
+
+                                    playBots();  
                                 }
 
                                 event.consume();
@@ -785,7 +791,8 @@ public class BoardView extends Pane {
                                 if (success) {
                                     clearSelection();
                                     drawBoard();
-                                    
+
+                                    playBots();  
                                 }
                             } else {
                                 clearSelection();
@@ -822,7 +829,8 @@ public class BoardView extends Pane {
                                 if (success) {
                                     clearSelection();
                                     drawBoard();
-                                    
+
+                                    playBots(); 
                                 }
 
                                 event.consume();
@@ -929,7 +937,8 @@ public class BoardView extends Pane {
                                 if (success) {
                                     clearSelection();
                                     drawBoard();
-                                    
+
+                                    playBots();  
                                 }
                             } else {
                                 clearSelection();
@@ -966,6 +975,8 @@ public class BoardView extends Pane {
                                 if (success) {
                                     clearSelection();
                                     drawBoard();
+
+                                    playBots(); 
                                 }
 
                                 event.consume();
@@ -1144,6 +1155,38 @@ public class BoardView extends Pane {
         this.getChildren().addAll(overlay, panel);
         overlay.toFront();
         panel.toFront();
+    }
+
+    public void playBots() {
+        new Thread(() -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+
+            int safety = 0;
+
+            while (!engine.isGameOver()
+                    && engine.isBot(engine.getCurrentPlayer())
+                    && safety < 2) {
+
+                engine.playBotTurn(); // calcul + coup hors UI thread
+                safety++;
+
+                Platform.runLater(() -> drawBoard());
+
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+
+            Platform.runLater(() -> drawBoard());
+        }).start();
     }
 
 }
