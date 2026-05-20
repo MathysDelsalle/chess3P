@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.chess.model.engine.GameEngine;
+import com.chess.controller.engine.GameEngine;
 
 public class Bot implements People {
     
@@ -68,12 +68,15 @@ public class Bot implements People {
 
                     return new ScoredMove(move, score);
                 })
+                //compare les score de a et b
                 .max((a, b) -> Integer.compare(a.score(), b.score()))
+                //extrait le meilleur coup possible
                 .map(sm -> sm.move())
+                //et sinon renvoie null
                 .orElse(null);
     }
 
-
+    //evalue le meilleur coup
     public int evaluate(GameEngine engine, People bot) {
         Board board = engine.getBoard();
         int score = 0;
@@ -86,8 +89,10 @@ public class Bot implements People {
 
             // bonus mobilité / centre / avancement
             int bonus = 0;
-            bonus += pos.getLigne() * 5; // avance vers le centre
-            if (pos.getLigne() == 4) bonus += 20; // jonctions/centre importants
+            bonus += pos.getLigne() * 5; 
+            // avance vers le centre
+            if (pos.getLigne() == 4) bonus += 20; 
+            // jonctions/centre importants
             if (pos.getColonne() >= 3 && pos.getColonne() <= 6) bonus += 10;
 
             if (p.getOwner().equals(bot)) {
@@ -152,18 +157,18 @@ public class Bot implements People {
         }
     }
 
-    public List<Move> getAllLegalMoves(GameEngine engine, People player) {
+    public List<Move> getAllLegalMoves(GameEngine engine, People bot) {
         List<Move> legalMoves = new ArrayList<>();
         Board board = engine.getBoard();
 
         for (Position pos : board.getPositions().values()) {
             Piece piece = board.getPiece(pos);
-            if (piece == null || !piece.getOwner().equals(player)) continue;
+            if (piece == null || !piece.getOwner().equals(bot)) continue;
 
             List<Move> possibleMoves = piece.getMovementStrategy().getPossibleMoves(pos, board, piece);
 
             for (Move move : possibleMoves) {
-                if (engine.isMoveValid(move)) { // ← plus de double getPossibleMoves
+                if (engine.isMoveValid(move)) {
                     legalMoves.add(move);
                 }
             }

@@ -1,7 +1,7 @@
 com\chess\view\ui\MainApp.class
 com\chess\Main.class
-com\chess\model\engine\GameEngine.class
 com\chess\model\strategy\MovementStrategy.class
+com\chess\controller\engine\GameEngine.class
 com\chess\model\PieceType.class
 com\chess\model\Command.class
 com\chess\view\ui\BoardView.class

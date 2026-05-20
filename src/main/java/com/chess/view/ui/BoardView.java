@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.chess.controller.engine.GameEngine;
 import com.chess.model.Board;
 import com.chess.model.Couleur;
 import com.chess.model.Move;
 import com.chess.model.Piece;
 import com.chess.model.PieceType;
 import com.chess.model.Position;
-import com.chess.model.engine.GameEngine;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -134,13 +134,6 @@ public class BoardView extends Pane {
                 );
             }
     }       
-
-
-
-        
-
-        
-    
 
     public void creationDemiTier(double caseDepartX, double caseDepartY , int indexCaseBlanc,
         Group groupe, double originX, double originY, int k, Map<Integer,Position> positions){
@@ -1209,6 +1202,7 @@ public class BoardView extends Pane {
         new Thread(() -> {
             try {
                 //sleep a changer si les bots jouent trop vite
+                //pas utilisé ici car les bots sont lents mais j'en ai eu besoin
                 Thread.sleep(1);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -1316,7 +1310,7 @@ public class BoardView extends Pane {
         panel.toFront();
     }
 
-    private Button createPromotionButton(Image image, double x, double y, PieceType pieceType) {
+    public Button createPromotionButton(Image image, double x, double y, PieceType pieceType) {
         ImageView imageView = new ImageView(image);
         imageView.setFitWidth(40);
         imageView.setFitHeight(40);

@@ -3,12 +3,12 @@ package com.chess.view.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.chess.controller.engine.GameEngine;
 import com.chess.factories.BoardFactory;
 import com.chess.model.Board;
 import com.chess.model.Bot;
 import com.chess.model.Player;
 import com.chess.model.People;
-import com.chess.model.engine.GameEngine;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -22,7 +22,7 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage stage) {
-        Player p = new Player("Tarti");
+        Player p = new Player("Joueur");
         Bot b1 = new Bot();
         Bot b2 = new Bot();
 

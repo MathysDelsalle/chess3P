@@ -1,6 +1,6 @@
 package com.chess.model;
 
-import com.chess.model.engine.GameEngine;
+import com.chess.controller.engine.GameEngine;
 
 public class MoveCommand implements Command {
     private final GameEngine engine;

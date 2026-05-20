@@ -30,6 +30,7 @@ public class Board {
         neighbors.get(to).put(direction,from);
 }
 
+    //connecte les cases seulement dans un sens , utile pour les jointures
     public void connectOneWay(Position from, Position to, Direction direction) {
         neighbors.get(from).put(direction, to);
 }
@@ -69,6 +70,7 @@ public class Board {
         return underAttack;
     }
 
+    //permet de trouver une position a partir de 3 entiers
     public Position findPosition(Map<Integer, Position> positions, int tiers, int ligne, int colonne) {
     if (tiers < 1 || tiers > 3 || ligne < 1 || ligne > 4 || colonne < 1 || colonne > 8) {
         return null;
@@ -78,6 +80,7 @@ public class Board {
     return positions.get(id);
     }
 
+    //ça c'est pour computer le fait que les cases soient attaquées ou protégées
     public void recomputeAttackMaps(){
         underAttack.clear();
         protectedRightNow.clear();
@@ -188,7 +191,7 @@ public class Board {
             copy.addPosition(newPos);
         }
 
-        //reconexion des positions
+        //reconnexion des positions
         BoardFactory.connectPositions(copy, copy.getPositions());
 
         //copie des pieces

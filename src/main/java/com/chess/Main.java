@@ -3,15 +3,16 @@ package com.chess;
 import java.util.List;
 import java.util.Scanner;
 
+import com.chess.controller.engine.GameEngine;
 import com.chess.factories.BoardFactory;
 import com.chess.model.Board;
 import com.chess.model.Bot;
 import com.chess.model.People;
 import com.chess.model.Player;
-import com.chess.model.engine.GameEngine;
 import com.chess.view.*;
 //import model.*;
 
+//fichier qui ne sert plus a rien atm , il servait avant mais plus depuis que j'ai l'ui
 public class Main {
     public static void main(String[] args) {
 

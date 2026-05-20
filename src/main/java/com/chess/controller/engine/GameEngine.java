@@ -1,4 +1,4 @@
-package com.chess.model.engine;
+package com.chess.controller.engine;
 
 import java.util.ArrayList;
 import java.util.List;
